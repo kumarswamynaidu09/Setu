@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-setu-primary: #1e3a8a; /* Deep trust navy */
+    --color-setu-primary-light: #3b82f6;
+    --color-setu-teal: #0f766e; /* Accessible warm teal */
+    --color-setu-teal-light: #14b8a6;
+    --color-setu-accent: #c2410c; /* Warm terracotta/amber for accessible emphasis */
+    --color-setu-surface: #f8fafc;
+    --color-setu-card: #ffffff;
+    --color-setu-text: #0f172a;
+    --color-setu-muted: #475569;
+    --color-setu-border: #cbd5e1;
+  }
+
+  /* High contrast theme overrides */
+  .theme-high-contrast {
+    --color-setu-primary: #000000;
+    --color-setu-teal: #004d40;
+    --color-setu-accent: #b71c1c;
+    --color-setu-surface: #ffffff;
+    --color-setu-card: #ffffff;
+    --color-setu-text: #000000;
+    --color-setu-muted: #1e293b;
+    --color-setu-border: #000000;
+  }
+
+  /* Dark theme overrides if selected */
+  .theme-dark {
+    --color-setu-primary: #60a5fa;
+    --color-setu-teal: #2dd4bf;
+    --color-setu-accent: #fb923c;
+    --color-setu-surface: #0f172a;
+    --color-setu-card: #1e293b;
+    --color-setu-text: #f8fafc;
+    --color-setu-muted: #cbd5e1;
+    --color-setu-border: #334155;
+  }
+
+  /* Dyslexia friendly font style option */
+  .font-dyslexia {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', 'Verdana', sans-serif !important;
+    letter-spacing: 0.08em;
+    word-spacing: 0.15em;
+    line-height: 1.8;
+  }
+
+  /* Focus visible accessibility requirement */
+  *:focus-visible {
+    outline: 3px solid #2563eb !important;
+    outline-offset: 3px !important;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Skip to content link */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #1e3a8a;
+    color: white;
+    padding: 8px 16px;
+    z-index: 9999;
+    transition: top 0.2s;
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
+}
+
+/* Custom scrollbars for clean accessible look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
