@@ -2,40 +2,63 @@
 
 @layer base {
   :root {
-    --color-setu-primary: #1e3a8a; /* Deep trust navy */
-    --color-setu-primary-light: #3b82f6;
-    --color-setu-teal: #0f766e; /* Accessible warm teal */
-    --color-setu-teal-light: #14b8a6;
-    --color-setu-accent: #c2410c; /* Warm terracotta/amber for accessible emphasis */
-    --color-setu-surface: #f8fafc;
-    --color-setu-card: #ffffff;
-    --color-setu-text: #0f172a;
-    --color-setu-muted: #475569;
-    --color-setu-border: #cbd5e1;
+    --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono-matrix: 'Space Mono', monospace;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Nothing Subtle Palette (Light) */
+    --bg-main: #f8f8f9;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f1f1f4;
+    --border-main: #e2e2e8;
+    --border-subtle: #ececf0;
+    --text-main: #09090b;
+    --text-muted: #52525b;
+    --accent-red: #d71921; /* Signature Nothing Crimson */
+    --accent-red-subtle: #fee2e2;
+    --accent-amber: #d97706;
+    --accent-teal: #0d9488;
   }
 
-  /* High contrast theme overrides */
-  .theme-high-contrast {
-    --color-setu-primary: #000000;
-    --color-setu-teal: #004d40;
-    --color-setu-accent: #b71c1c;
-    --color-setu-surface: #ffffff;
-    --color-setu-card: #ffffff;
-    --color-setu-text: #000000;
-    --color-setu-muted: #1e293b;
-    --color-setu-border: #000000;
-  }
-
-  /* Dark theme overrides if selected */
+  /* Dark / Obsidian Nothing Palette */
   .theme-dark {
-    --color-setu-primary: #60a5fa;
-    --color-setu-teal: #2dd4bf;
-    --color-setu-accent: #fb923c;
-    --color-setu-surface: #0f172a;
-    --color-setu-card: #1e293b;
-    --color-setu-text: #f8fafc;
-    --color-setu-muted: #cbd5e1;
-    --color-setu-border: #334155;
+    --bg-main: #09090b;
+    --bg-surface: #121215;
+    --bg-subtle: #1c1c21;
+    --border-main: #27272a;
+    --border-subtle: #1f1f23;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --accent-red: #ef4444;
+    --accent-red-subtle: rgba(239, 68, 68, 0.15);
+    --accent-amber: #f59e0b;
+    --accent-teal: #14b8a6;
+  }
+
+  /* High Contrast AAA Mode */
+  .theme-high-contrast {
+    --bg-main: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f4f4f5;
+    --border-main: #000000;
+    --border-subtle: #000000;
+    --text-main: #000000;
+    --text-muted: #18181b;
+    --accent-red: #991b1b;
+    --accent-red-subtle: #fee2e2;
+    --accent-amber: #92400e;
+    --accent-teal: #0f766e;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
   }
 
   /* Dyslexia friendly font style option */
@@ -48,7 +71,7 @@
 
   /* Focus visible accessibility requirement */
   *:focus-visible {
-    outline: 3px solid #2563eb !important;
+    outline: 2px solid var(--accent-red) !important;
     outline-offset: 3px !important;
   }
 
@@ -67,30 +90,128 @@
     position: absolute;
     top: -40px;
     left: 0;
-    background: #1e3a8a;
-    color: white;
+    background: #09090b;
+    color: #ffffff;
     padding: 8px 16px;
     z-index: 9999;
     transition: top 0.2s;
-    font-weight: 600;
+    font-family: var(--font-mono-matrix);
+    font-size: 12px;
+    font-weight: 700;
   }
   .skip-link:focus {
     top: 0;
   }
 }
 
-/* Custom scrollbars for clean accessible look */
+/* Subtle Nothing Dot-Grid Background */
+.bg-nothing-grid {
+  background-image: radial-gradient(rgba(113, 113, 122, 0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.theme-dark .bg-nothing-grid {
+  background-image: radial-gradient(rgba(161, 161, 170, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Nothing Glyph Dot Indicator */
+.glyph-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--accent-red);
+  display: inline-block;
+}
+
+.glyph-dot-pulse {
+  animation: glyph-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes glyph-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+/* Nothing Monospace Tape Label / Tag */
+.nothing-label {
+  font-family: var(--font-mono-matrix);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Modular Card Bevel & Border */
+.nothing-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  border-radius: 1.5rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.nothing-card:hover {
+  border-color: rgba(113, 113, 122, 0.4);
+}
+
+/* Nothing Segmented Mechanical Button */
+.nothing-btn-primary {
+  font-family: var(--font-mono-matrix);
+  background-color: #09090b;
+  color: #ffffff;
+  border: 1px solid #27272a;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+
+.theme-dark .nothing-btn-primary {
+  background-color: #f4f4f5;
+  color: #09090b;
+  border-color: #ffffff;
+}
+
+.nothing-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.nothing-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Nothing Red Accent Button */
+.nothing-btn-accent {
+  font-family: var(--font-mono-matrix);
+  background-color: var(--accent-red);
+  color: #ffffff;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.nothing-btn-accent:hover {
+  opacity: 0.9;
+}
+
+/* Custom Minimal Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
+  background: #d4d4d8;
+  border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+.theme-dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
 }

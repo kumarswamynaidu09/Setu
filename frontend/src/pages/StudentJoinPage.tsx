@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useLiveClassroom } from '../context/LiveClassroomContext';
-import { Radio, ArrowRight, Sparkles, User, KeyRound } from 'lucide-react';
+import { Radio, ArrowRight, User, KeyRound } from 'lucide-react';
 
 interface StudentJoinPageProps {
   navigate: (route: string, data?: any) => void;
@@ -47,7 +47,6 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
         throw new Error(data.detail || 'Could not join classroom');
       }
 
-      // Save student session info
       localStorage.setItem('setu_student_token', data.student_token);
       localStorage.setItem('setu_student_session', JSON.stringify(data));
 
@@ -61,24 +60,27 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
   };
 
   return (
-    <div className="max-w-md mx-auto py-12 px-4 text-slate-900 dark:text-slate-100">
+    <div className="max-w-md mx-auto py-12 px-4 text-zinc-900 dark:text-zinc-100 font-body">
       <div className="text-center mb-8">
-        <div className="w-14 h-14 rounded-3xl bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 flex items-center justify-center mx-auto mb-4 shadow-sm">
-          <Radio className="w-7 h-7" />
+        <div className="w-12 h-12 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center mx-auto mb-3 shadow-xs">
+          <Radio className="w-5 h-5 text-red-500" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black">
+        <div className="nothing-label text-xs text-red-500 font-bold mb-1">
+          [ ACCESS PORTAL // ZERO REGISTRATION ]
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold font-heading">
           {t.student.joinBtn}
         </h1>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-          Scan the blackboard QR code or enter your teacher's room code below.
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          Enter your teacher's 6-character room code or scan the projected QR.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm font-mono">
         {error && (
           <div
             role="alert"
-            className="p-3 mb-5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-medium"
+            className="p-3 mb-5 rounded-xl bg-red-950/20 border border-red-500/80 text-red-600 dark:text-red-400 text-xs font-bold"
           >
             {error}
           </div>
@@ -88,10 +90,10 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
           <div>
             <label
               htmlFor="room-code-input"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5"
+              className="nothing-label block text-xs text-zinc-500 dark:text-zinc-400 mb-2 flex items-center gap-1.5"
             >
-              <KeyRound className="w-4 h-4 text-teal-600" />
-              <span>{t.student.roomCodePrompt}</span>
+              <KeyRound className="w-3.5 h-3.5 text-red-500" />
+              <span>( 01 ) ROOM CODE (6 CHARACTERS)</span>
             </label>
             <input
               id="room-code-input"
@@ -100,18 +102,18 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
               maxLength={10}
               value={roomCode}
               onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-              placeholder="e.g. SETU89"
-              className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-xl font-mono font-bold tracking-widest text-center focus:ring-2 focus:ring-teal-500 focus:outline-none uppercase"
+              placeholder="SETU89"
+              className="w-full px-4 py-3.5 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-2xl font-mono font-bold tracking-widest text-center focus:ring-2 focus:ring-red-500 focus:outline-none uppercase"
             />
           </div>
 
           <div>
             <label
               htmlFor="nickname-input"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5"
+              className="nothing-label block text-xs text-zinc-500 dark:text-zinc-400 mb-2 flex items-center gap-1.5"
             >
-              <User className="w-4 h-4 text-teal-600" />
-              <span>{t.student.nicknamePrompt}</span>
+              <User className="w-3.5 h-3.5 text-zinc-400" />
+              <span>( 02 ) TEMPORARY NICKNAME (OPTIONAL)</span>
             </label>
             <input
               id="nickname-input"
@@ -119,20 +121,20 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="e.g. Arya"
-              className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
             />
-            <p className="text-[11px] text-slate-500 mt-1">
-              No account required. Your nickname is only visible during this session.
+            <p className="text-[10px] text-zinc-400 mt-1">
+              No account created. Data is discarded when the session ends.
             </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-teal-600 hover:bg-teal-700 disabled:bg-slate-400 text-white font-extrabold rounded-2xl shadow-md transition-all text-base flex items-center justify-center gap-2 focus-visible:ring-4 focus-visible:ring-teal-500"
+            className="w-full py-3.5 nothing-btn-primary text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 shadow-sm"
           >
-            <span>{loading ? 'Joining Classroom...' : t.student.joinBtn}</span>
-            <ArrowRight className="w-5 h-5" />
+            <span>{loading ? 'CONNECTING...' : 'ENTER LIVE ROOM'}</span>
+            <ArrowRight className="w-4 h-4 text-red-500" />
           </button>
         </form>
       </div>

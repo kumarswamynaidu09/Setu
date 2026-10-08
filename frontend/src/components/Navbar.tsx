@@ -4,18 +4,15 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { AccessibilityModal } from './AccessibilityModal';
 import { AppLanguage } from '../types';
 import {
-  Sparkles,
   Sliders,
   Globe,
-  User as UserIcon,
   LogOut,
   LogIn,
-  BookOpen,
   Radio,
   Building2,
-  HelpCircle,
   Menu,
-  X
+  X,
+  Circle
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -35,31 +32,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo & Product Title */}
+            {/* Logo & Nothing-Style Identity */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('home')}
-                className="flex items-center gap-2.5 text-left focus-visible:ring-2 rounded-lg p-1"
+                className="flex items-center gap-2.5 text-left focus-visible:ring-2 rounded-xl p-1 group"
                 aria-label="SETU - Home"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 via-blue-700 to-teal-600 flex items-center justify-center text-white font-black text-xl shadow-md">
-                  स
+                <div className="w-9 h-9 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 flex items-center justify-center font-mono font-bold text-base shadow-xs group-hover:bg-red-600 dark:group-hover:bg-red-600 dark:group-hover:text-white transition-colors">
+                  (S)
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
+                    <span className="font-extrabold text-lg tracking-tight font-heading text-zinc-900 dark:text-white">
                       SETU
                     </span>
-                    <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                      SevaFirst 2026
+                    <span className="nothing-label text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                      v1.0 // 2026
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden md:block leading-none">
-                    {t.tagline}
+                  <p className="nothing-label text-[10px] text-zinc-400 dark:text-zinc-500 hidden md:block leading-none mt-0.5">
+                    ONE CLASSROOM. MANY WAYS TO LEARN.
                   </p>
                 </div>
               </button>
@@ -71,33 +68,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 <>
                   <button
                     onClick={() => navigate('teacher-dashboard')}
-                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                       currentRoute === 'teacher-dashboard'
-                        ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                     }`}
                   >
-                    {t.nav.dashboard}
+                    ( DASHBOARD )
                   </button>
                   <button
                     onClick={() => navigate('classes')}
-                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                       currentRoute === 'classes'
-                        ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                     }`}
                   >
-                    {t.nav.classes}
+                    CLASSES
                   </button>
                   <button
                     onClick={() => navigate('lessons')}
-                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                       currentRoute === 'lessons'
-                        ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                     }`}
                   >
-                    {t.nav.lessons}
+                    LESSONS
                   </button>
                 </>
               )}
@@ -105,39 +102,39 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               {isAuthenticated && user?.role === 'coordinator' && (
                 <button
                   onClick={() => navigate('coordinator')}
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                     currentRoute === 'coordinator'
-                      ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                      : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4" />
-                    {t.nav.coordinator}
+                    <Building2 className="w-3.5 h-3.5" />
+                    COORDINATOR
                   </span>
                 </button>
               )}
 
               <button
                 onClick={() => navigate('about')}
-                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                   currentRoute === 'about'
-                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
-                {t.nav.about}
+                ABOUT
               </button>
 
               <button
                 onClick={() => navigate('accessibility')}
-                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                   currentRoute === 'accessibility'
-                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
-                {t.nav.accessibility}
+                A11Y
               </button>
             </nav>
 
@@ -149,16 +146,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 <label htmlFor="language-select" className="sr-only">
                   Select Language
                 </label>
-                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
-                  <Globe className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+                <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full px-2.5 py-1 text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                  <Globe className="w-3 h-3 text-zinc-400" aria-hidden="true" />
                   <select
                     id="language-select"
                     value={language}
                     onChange={(e) => setLanguage(e.target.value as AppLanguage)}
-                    className="bg-transparent border-none focus:outline-none cursor-pointer pr-1"
+                    className="bg-transparent border-none focus:outline-none cursor-pointer pr-1 text-xs"
                   >
-                    <option value="en">English</option>
-                    <option value="hi">हिंदी</option>
+                    <option value="en">EN</option>
+                    <option value="hi">हिन्दी</option>
                     <option value="te">తెలుగు</option>
                   </select>
                 </div>
@@ -168,19 +165,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <button
                 onClick={() => setIsA11yModalOpen(true)}
                 aria-label="Open accessibility display and speech settings"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900 font-semibold text-xs border border-blue-200 dark:border-blue-800 focus-visible:ring-2"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 font-mono font-bold text-xs border border-zinc-200 dark:border-zinc-800 focus-visible:ring-2"
               >
-                <Sliders className="w-3.5 h-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Preferences</span>
+                <Sliders className="w-3 h-3 text-red-500" aria-hidden="true" />
+                <span className="hidden sm:inline">PREFS</span>
               </button>
 
-              {/* Student Quick Join Button */}
+              {/* Student Quick Join Button with Crimson Red Dot */}
               <button
                 onClick={() => navigate('student-join')}
-                className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1"
+                className="px-3.5 py-1.5 rounded-full bg-zinc-900 hover:bg-red-600 dark:bg-zinc-100 dark:hover:bg-red-600 text-white dark:text-zinc-950 dark:hover:text-white font-mono text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
               >
-                <Radio className="w-3.5 h-3.5" />
-                <span>{t.nav.join}</span>
+                <span className="w-2 h-2 rounded-full bg-red-500 group-hover:bg-white animate-pulse" />
+                <span>JOIN</span>
               </button>
 
               {/* Auth Button */}
@@ -193,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     }}
                     title="Sign Out"
                     aria-label="Sign Out"
-                    className="p-2 text-slate-500 hover:text-red-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="p-1.5 text-zinc-400 hover:text-red-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -201,10 +198,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               ) : (
                 <button
                   onClick={() => navigate('login')}
-                  className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-mono text-xs font-bold flex items-center gap-1"
                 >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{t.nav.login}</span>
+                  <LogIn className="w-3 h-3" />
+                  <span className="hidden sm:inline">TEACHER</span>
                 </button>
               )}
 
@@ -212,7 +209,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle navigation menu"
-                className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                className="md:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -223,60 +220,60 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 space-y-1">
+          <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 space-y-1 font-mono text-xs">
             <button
               onClick={() => { navigate('home'); setIsMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
-              {t.nav.home}
+              ( 01 ) HOME
             </button>
             {isAuthenticated && user?.role === 'teacher' && (
               <>
                 <button
                   onClick={() => { navigate('teacher-dashboard'); setIsMobileMenuOpen(false); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
-                  {t.nav.dashboard}
+                  ( 02 ) DASHBOARD
                 </button>
                 <button
                   onClick={() => { navigate('classes'); setIsMobileMenuOpen(false); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
-                  {t.nav.classes}
+                  ( 03 ) CLASSES
                 </button>
                 <button
                   onClick={() => { navigate('lessons'); setIsMobileMenuOpen(false); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
-                  {t.nav.lessons}
+                  ( 04 ) LESSONS
                 </button>
               </>
             )}
             {isAuthenticated && user?.role === 'coordinator' && (
               <button
                 onClick={() => { navigate('coordinator'); setIsMobileMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
               >
-                {t.nav.coordinator}
+                ( 05 ) COORDINATOR
               </button>
             )}
             <button
               onClick={() => { navigate('about'); setIsMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
-              {t.nav.about}
+              ABOUT
             </button>
             <button
               onClick={() => { navigate('accessibility'); setIsMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
-              {t.nav.accessibility}
+              ACCESSIBILITY
             </button>
             <button
               onClick={() => { navigate('privacy'); setIsMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="w-full text-left px-3 py-2 rounded-xl font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
-              {t.nav.privacy}
+              PRIVACY
             </button>
           </div>
         )}

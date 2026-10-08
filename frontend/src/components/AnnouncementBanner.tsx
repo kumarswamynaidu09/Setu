@@ -24,13 +24,13 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({ announce
   const getCategoryIcon = () => {
     switch (announcement.category) {
       case 'Exam':
-        return <Calendar className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
+        return <Calendar className="w-4 h-4 text-amber-500" />;
       case 'Assignment':
-        return <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
+        return <FileText className="w-4 h-4 text-zinc-400" />;
       case 'Safety':
-        return <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />;
+        return <AlertTriangle className="w-4 h-4 text-red-500" />;
       default:
-        return <Megaphone className="w-5 h-5 text-teal-600 dark:text-teal-400" />;
+        return <Megaphone className="w-4 h-4 text-zinc-400" />;
     }
   };
 
@@ -38,27 +38,27 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({ announce
     <div
       role="region"
       aria-label="Teacher Announcement"
-      className={`rounded-2xl p-4 mb-4 border transition-all shadow-sm ${
+      className={`rounded-2xl p-4 mb-4 border transition-all shadow-xs backdrop-blur-xs ${
         isUrgent
-          ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100'
-          : 'bg-blue-50/90 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 text-blue-950 dark:text-blue-100'
+          ? 'bg-zinc-900 text-white dark:bg-zinc-900 border-red-500/80'
+          : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-xs shrink-0">
+          <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full shrink-0">
             {getCategoryIcon()}
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/80 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                {announcement.category}
+              <span className="nothing-label text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-200 border border-zinc-700">
+                [ {announcement.category} ]
               </span>
-              <h4 className="font-bold text-base leading-tight">
+              <h4 className="font-bold text-sm sm:text-base font-heading">
                 {announcement.title}
               </h4>
             </div>
-            <p className="text-sm mt-1 leading-relaxed opacity-90">
+            <p className="text-xs sm:text-sm mt-1 leading-relaxed opacity-90 font-normal">
               {announcement.content}
             </p>
           </div>
@@ -68,18 +68,18 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({ announce
           <button
             onClick={handleReadAloud}
             aria-label={isSpeaking ? "Stop reading announcement" : "Listen to announcement"}
-            className="p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-xs border border-slate-200 dark:border-slate-700 transition-colors"
+            className="p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 transition-colors"
             title="Read Aloud"
           >
-            <Volume2 className={`w-4 h-4 ${isSpeaking ? 'text-blue-600 animate-pulse' : ''}`} />
+            <Volume2 className={`w-3.5 h-3.5 ${isSpeaking ? 'text-red-500 animate-pulse' : ''}`} />
           </button>
           {onDismiss && (
             <button
               onClick={onDismiss}
               aria-label="Dismiss announcement banner"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              className="p-2 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
