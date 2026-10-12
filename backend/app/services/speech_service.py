@@ -15,7 +15,7 @@ class SpeechProcessingService:
         self.recognizer.dynamic_energy_threshold = True
         self.recognizer.pause_threshold = 0.8
         
-        # Classroom vocabulary enhancement mapping
+        # Classroom vocabulary enhancement mapping for intermediate academic terms
         self.term_corrections = {
             "solar sistam": "Solar System",
             "solar sistum": "Solar System",
@@ -24,11 +24,28 @@ class SpeechProcessingService:
             "revolution": "revolution",
             "rotashun": "rotation",
             "grawity": "gravity",
+            "gravitational": "gravitational",
             "mercury venus": "Mercury, Venus",
             "jupitar": "Jupiter",
             "satren": "Saturn",
+            "mercry": "Mercury",
+            "neptun": "Neptune",
             "photosinthesis": "photosynthesis",
-            "ekuator": "equator"
+            "photo synthesis": "photosynthesis",
+            "chlorophil": "chlorophyll",
+            "clorophil": "chlorophyll",
+            "ekuator": "equator",
+            "hemisfere": "hemisphere",
+            "atmospere": "atmosphere",
+            "atmosfear": "atmosphere",
+            "celestial": "celestial",
+            "constellation": "constellation",
+            "evaporation": "evaporation",
+            "condensation": "condensation",
+            "precipitation": "precipitation",
+            "respiration": "respiration",
+            "mitochondria": "mitochondria",
+            "ecosystem": "ecosystem"
         }
 
     def process_audio_chunk(self, audio_bytes: bytes, language: str = "en-IN") -> Dict[str, Any]:

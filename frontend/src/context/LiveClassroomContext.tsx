@@ -9,6 +9,7 @@ interface LiveClassroomContextType {
   participantCount: number;
   currentSectionIndex: number;
   captions: CaptionSegment[];
+  interimCaption: string | null;
   announcements: Announcement[];
   questions: StudentQuestion[];
   latestAnnouncement: Announcement | null;
@@ -24,6 +25,7 @@ interface LiveClassroomContextType {
   acknowledgeQuestion: (questionId: string) => Promise<void>;
   answerQuestion: (questionId: string, responseText: string) => Promise<void>;
   postCaption: (text: string, language?: string) => Promise<void>;
+  broadcastInterimCaption: (interimText: string) => void;
   correctCaption: (segmentId: string, correctedText: string) => Promise<void>;
   endSession: () => Promise<void>;
 }
@@ -39,6 +41,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
   const [participantCount, setParticipantCount] = useState<number>(0);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
   const [captions, setCaptions] = useState<CaptionSegment[]>([]);
+  const [interimCaption, setInterimCaption] = useState<string | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [questions, setQuestions] = useState<StudentQuestion[]>([]);
   const [latestAnnouncement, setLatestAnnouncement] = useState<Announcement | null>(null);
@@ -98,10 +101,17 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
         switch (data.type) {
           case 'CAPTION_NEW':
             if (data.caption) {
+              setInterimCaption(null); // Clear live partial caption once finalized
               setCaptions(prev => {
                 if (prev.some(c => c.id === data.caption.id)) return prev;
                 return [...prev, data.caption];
               });
+            }
+            break;
+
+          case 'CAPTION_INTERIM':
+            if (typeof data.text === 'string') {
+              setInterimCaption(data.text);
             }
             break;
 
@@ -328,6 +338,19 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const broadcastInterimCaption = (text: string) => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      try {
+        socketRef.current.send(JSON.stringify({
+          type: 'TEACHER_INTERIM',
+          text
+        }));
+      } catch (e) {
+        // Ignore socket write race condition
+      }
+    }
+  };
+
   const endSession = async () => {
     if (!sessionId) return;
     const token = localStorage.getItem('setu_auth_token');
@@ -349,6 +372,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       participantCount,
       currentSectionIndex,
       captions,
+      interimCaption,
       announcements,
       questions,
       latestAnnouncement,
@@ -362,6 +386,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       acknowledgeQuestion,
       answerQuestion,
       postCaption,
+      broadcastInterimCaption,
       correctCaption,
       endSession
     }}>

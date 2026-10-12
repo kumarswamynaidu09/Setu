@@ -177,6 +177,12 @@ async def websocket_live_channel(websocket: WebSocket, session_id: str, role: st
             
             if event_type == "PING":
                 await websocket.send_json({"type": "PONG"})
+            elif event_type == "TEACHER_INTERIM":
+                interim_text = data.get("text", "")
+                await ws_manager.broadcast_to_room(session_id, {
+                    "type": "CAPTION_INTERIM",
+                    "text": interim_text
+                })
             elif event_type == "STUDENT_PULSE":
                 # Heartbeat
                 pass

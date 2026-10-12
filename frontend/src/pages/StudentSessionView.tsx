@@ -37,6 +37,7 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
     roomCode,
     connectionStatus,
     captions,
+    interimCaption,
     announcements,
     questions,
     currentSectionIndex: teacherSectionIndex,
@@ -267,7 +268,7 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
               </button>
             </div>
 
-            {captions.length === 0 ? (
+            {captions.length === 0 && !interimCaption ? (
               <div className="py-16 text-center space-y-3">
                 <div className="w-12 h-12 rounded-full bg-[#E6F4F1] text-[#0D7377] flex items-center justify-center mx-auto">
                   <Radio className="w-6 h-6 animate-pulse" />
@@ -307,6 +308,19 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
                     </p>
                   </div>
                 ))}
+
+                {/* Real-time Streaming Interim Caption Bubble */}
+                {interimCaption && (
+                  <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/60 transition-all animate-pulse">
+                    <div className="flex items-center gap-1.5 text-xs text-blue-600 font-semibold mb-1">
+                      <Radio className="w-3.5 h-3.5 animate-spin" />
+                      <span>Speaking now...</span>
+                    </div>
+                    <p className="text-base sm:text-lg leading-relaxed text-blue-950 font-normal italic">
+                      {interimCaption}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

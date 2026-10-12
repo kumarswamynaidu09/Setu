@@ -40,6 +40,7 @@ export const TeacherLiveClassroom: React.FC<TeacherLiveClassroomProps> = ({ navi
     acknowledgeQuestion,
     answerQuestion,
     postCaption,
+    broadcastInterimCaption,
     correctCaption,
     endSession,
     joinRoom
@@ -94,6 +95,10 @@ export const TeacherLiveClassroom: React.FC<TeacherLiveClassroomProps> = ({ navi
     }
   };
 
+  const handleInterimCaptured = (text: string) => {
+    broadcastInterimCaption(text);
+  };
+
   const {
     isListening,
     interimText,
@@ -102,6 +107,7 @@ export const TeacherLiveClassroom: React.FC<TeacherLiveClassroomProps> = ({ navi
     stopListening
   } = useSpeechRecognition({
     onSegmentCaptured: handleSegmentCaptured,
+    onInterimCaptured: handleInterimCaptured,
     language,
     sessionId: sessionId || sessionData?.id
   });
