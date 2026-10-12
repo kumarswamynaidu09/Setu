@@ -2,10 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.core.config import settings
 
-# Ensure postgres:// is converted to postgresql:// (common on cloud hosts like Railway/Heroku/Supabase)
+# Ensure postgres:// and postgresql:// without driver specify psycopg2 explicitly
 db_url = settings.DATABASE_URL
 if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
 
