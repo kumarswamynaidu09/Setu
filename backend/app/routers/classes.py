@@ -8,12 +8,65 @@ from app.routers.auth import get_current_teacher
 
 router = APIRouter(prefix="/classes", tags=["Classrooms"])
 
+from app.models.models import ClassRoom, User, Lesson, LessonSection
+
 @router.get("", response_model=List[ClassResponse])
 def list_classes(
     current_user: User = Depends(get_current_teacher),
     db: Session = Depends(get_db)
 ):
     classes = db.query(ClassRoom).filter(ClassRoom.teacher_id == current_user.id).all()
+    # If this teacher has no classes yet, auto-provision starter inclusive classes and demo lesson plan
+    if not classes:
+        starter1 = ClassRoom(
+            name="Class 6 - Section A",
+            grade="Class 6",
+            subject="General Science",
+            section="A",
+            teacher_id=current_user.id
+        )
+        starter2 = ClassRoom(
+            name="Class 7 - Section B",
+            grade="Class 7",
+            subject="Physical Sciences",
+            section="B",
+            teacher_id=current_user.id
+        )
+        db.add(starter1)
+        db.add(starter2)
+        db.flush()
+
+        # Clone preloaded demo lesson if available
+        demo_lesson = db.query(Lesson).filter(Lesson.title.like("%Solar System%")).first()
+        if demo_lesson:
+            new_lesson = Lesson(
+                class_id=starter1.id,
+                title=demo_lesson.title,
+                subject=demo_lesson.subject,
+                grade=demo_lesson.grade,
+                summary=demo_lesson.summary,
+                language=demo_lesson.language,
+                is_published=True
+            )
+            db.add(new_lesson)
+            db.flush()
+
+            for sec in demo_lesson.sections:
+                new_sec = LessonSection(
+                    lesson_id=new_lesson.id,
+                    order_index=sec.order_index,
+                    title=sec.title,
+                    content_text=sec.content_text,
+                    simplified_text=sec.simplified_text,
+                    key_terms=sec.key_terms,
+                    image_url=sec.image_url,
+                    image_alt=sec.image_alt,
+                    image_pedagogical_description=sec.image_pedagogical_description
+                )
+                db.add(new_sec)
+        db.commit()
+        classes = [starter1, starter2]
+
     results = []
     for c in classes:
         count = db.query(Lesson).filter(Lesson.class_id == c.id).count()

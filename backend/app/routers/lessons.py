@@ -17,7 +17,10 @@ def list_lessons(
     query = db.query(Lesson).join(ClassRoom).filter(ClassRoom.teacher_id == current_user.id)
     if class_id:
         query = query.filter(Lesson.class_id == class_id)
-    return query.all()
+    lessons = query.all()
+    if not lessons and not class_id:
+        lessons = db.query(Lesson).filter(Lesson.is_published == True).all()
+    return lessons
 
 @router.get("/published", response_model=List[LessonResponse])
 def get_published_lessons(

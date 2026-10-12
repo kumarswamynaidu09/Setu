@@ -17,6 +17,7 @@ interface TeacherDashboardProps {
 
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) => {
   const { user, token } = useAuth();
+  const effectiveToken = token || localStorage.getItem('setu_auth_token') || '';
   const { joinRoom } = useLiveClassroom();
 
   const [classes, setClasses] = useState<ClassRoom[]>([]);
@@ -26,29 +27,37 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!token) return;
+  const loadData = () => {
+    if (!effectiveToken) return;
 
     fetch('/api/classes', {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${effectiveToken}` }
     })
       .then(res => res.json())
       .then(data => {
-        setClasses(data || []);
-        if (data && data.length > 0) setSelectedClassId(data[0].id);
+        if (Array.isArray(data)) {
+          setClasses(data);
+          if (data.length > 0 && !selectedClassId) setSelectedClassId(data[0].id);
+        }
       })
       .catch(console.error);
 
     fetch('/api/lessons', {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${effectiveToken}` }
     })
       .then(res => res.json())
       .then(data => {
-        setLessons(data || []);
-        if (data && data.length > 0) setSelectedLessonId(data[0].id);
+        if (Array.isArray(data)) {
+          setLessons(data);
+          if (data.length > 0 && !selectedLessonId) setSelectedLessonId(data[0].id);
+        }
       })
       .catch(console.error);
-  }, [token]);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [effectiveToken]);
 
   const handleStartLiveClass = async () => {
     if (!selectedClassId) {
@@ -146,36 +155,64 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">
-              Assigned Class
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-700">
+                Assigned Class
+              </label>
+              {classes.length === 0 && (
+                <button
+                  onClick={() => navigate('classes')}
+                  className="text-xs text-[#0A625D] font-bold hover:underline"
+                >
+                  + Create Class
+                </button>
+              )}
+            </div>
             <select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
               className="ios-input w-full cursor-pointer text-sm font-semibold"
             >
-              {classes.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.grade} • {c.name} ({c.subject})
-                </option>
-              ))}
+              {classes.length === 0 ? (
+                <option value="">No classes yet — click "New Class" above</option>
+              ) : (
+                classes.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.grade} • {c.name} ({c.subject})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">
-              Lesson Plan (with Audio Descriptions)
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-700">
+                Lesson Plan (with Audio Descriptions)
+              </label>
+              {lessons.length === 0 && (
+                <button
+                  onClick={() => navigate('lesson-editor', { classId: selectedClassId })}
+                  className="text-xs text-[#0A625D] font-bold hover:underline"
+                >
+                  + Add Lesson
+                </button>
+              )}
+            </div>
             <select
               value={selectedLessonId}
               onChange={(e) => setSelectedLessonId(e.target.value)}
               className="ios-input w-full cursor-pointer text-sm font-semibold"
             >
-              {lessons.map(l => (
-                <option key={l.id} value={l.id}>
-                  {l.title} ({l.sections?.length || 0} Sections)
-                </option>
-              ))}
+              {lessons.length === 0 ? (
+                <option value="">No lesson plans yet — click "Add Lesson" above</option>
+              ) : (
+                lessons.map(l => (
+                  <option key={l.id} value={l.id}>
+                    {l.title} ({l.sections?.length || 0} Sections)
+                  </option>
+                ))
+              )}
             </select>
           </div>
         </div>
