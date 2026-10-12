@@ -52,6 +52,12 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
   const sessionIdRef = useRef<string | null>(null);
   const roleRef = useRef<'teacher' | 'student'>('student');
   const nicknameRef = useRef<string>('Student');
+  const captionsRef = useRef<CaptionSegment[]>([]);
+
+  // Keep captionsRef updated
+  useEffect(() => {
+    captionsRef.current = captions;
+  }, [captions]);
 
   // Load existing session details from backend
   const fetchSessionDetails = useCallback(async (sid: string) => {
@@ -61,6 +67,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
         const data = await res.json();
         if (Array.isArray(data.captions)) {
           setCaptions(data.captions);
+          captionsRef.current = data.captions;
         }
         if (Array.isArray(data.announcements)) {
           setAnnouncements(data.announcements);
@@ -293,7 +300,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!activeSid || !text.trim()) return;
 
     const token = localStorage.getItem('setu_auth_token');
-    const segmentIndex = captions.length + 1;
+    const segmentIndex = captionsRef.current.length + 1;
 
     try {
       const res = await fetch('/api/speech/captions/manual-stream', {
@@ -315,7 +322,9 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
         // Optimistically append if not received via socket yet
         setCaptions(prev => {
           if (prev.some(c => c.id === newCap.id)) return prev;
-          return [...prev, newCap];
+          const updated = [...prev, newCap];
+          captionsRef.current = updated;
+          return updated;
         });
       }
     } catch (err) {

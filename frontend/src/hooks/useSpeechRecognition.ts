@@ -73,190 +73,153 @@ export const useSpeechRecognition = ({
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
   const [activeEngine, setActiveEngine] = useState<'browser_api' | 'backend_audio' | 'idle'>('idle');
 
+  // Stable refs for callbacks so recognition never needs to teardown on state/prop re-render
+  const onSegmentCapturedRef = useRef(onSegmentCaptured);
+  onSegmentCapturedRef.current = onSegmentCaptured;
+
+  const onInterimCapturedRef = useRef(onInterimCaptured);
+  onInterimCapturedRef.current = onInterimCaptured;
+
+  const languageRef = useRef(language);
+  languageRef.current = language;
+
+  const sessionIdRef = useRef(sessionId);
+  sessionIdRef.current = sessionId;
+
   const recognitionRef = useRef<any>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const isListeningRef = useRef(false);
 
-  // Buffer and timer to cleanly flush long continuous phrases without getting stuck
+  // Buffer and timer to cleanly flush speech when user pauses
   const interimBufferRef = useRef<string>('');
   const silenceTimerRef = useRef<any>(null);
-  const lastProcessedTextRef = useRef<string>('');
+  const restartTimerRef = useRef<any>(null);
 
   const win = typeof window !== 'undefined' ? (window as unknown as IWindow) : null;
   const SpeechRecognitionAPI = win?.SpeechRecognition || win?.webkitSpeechRecognition;
 
-  // Flush buffer if user pauses for more than 1.6 seconds without browser firing isFinal
+  // Flush buffer if user pauses for more than 1.4 seconds without browser firing isFinal
   const flushCurrentSpeech = useCallback(() => {
     const raw = interimBufferRef.current.trim();
-    if (raw && raw !== lastProcessedTextRef.current) {
+    if (raw) {
       const enhanced = enhanceClassroomText(raw);
-      lastProcessedTextRef.current = raw;
       interimBufferRef.current = '';
       setInterimText('');
-      if (onInterimCaptured) onInterimCaptured('');
-      onSegmentCaptured(enhanced, true);
+      if (onInterimCapturedRef.current) onInterimCapturedRef.current('');
+      onSegmentCapturedRef.current(enhanced, true);
     }
-  }, [onInterimCaptured, onSegmentCaptured]);
+  }, []);
 
-  // Fallback: send audio chunks to backend if browser speech recognition is unsupported or fails
-  const startBackendAudioCapture = useCallback(async (stream: MediaStream) => {
-    try {
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : MediaRecorder.isTypeSupported('audio/ogg; codecs=opus')
-        ? 'audio/ogg; codecs=opus'
-        : '';
+  // Safe continuous restart function
+  const safeRestart = useCallback(() => {
+    if (!isListeningRef.current || !SpeechRecognitionAPI) return;
+    if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
 
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      mediaRecorderRef.current = recorder;
-
-      recorder.ondataavailable = async (e) => {
-        if (e.data.size > 200 && sessionId && isListeningRef.current) {
-          const formData = new FormData();
-          formData.append('audio_file', e.data, 'chunk.wav');
-          formData.append('session_id', sessionId);
-          formData.append('language', language);
+    restartTimerRef.current = setTimeout(() => {
+      if (!isListeningRef.current) return;
+      try {
+        if (recognitionRef.current) {
           try {
-            const res = await fetch('/api/speech/transcribe-chunk', {
-              method: 'POST',
-              body: formData
-            });
-            if (res.ok) {
-              const data = await res.json();
-              if (data.text) {
-                const enhanced = enhanceClassroomText(data.text);
-                onSegmentCaptured(enhanced, true);
-              }
+            recognitionRef.current.abort();
+          } catch (e) {}
+        }
+
+        const recognition = new SpeechRecognitionAPI();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 3;
+
+        let langCode = 'en-IN';
+        if (languageRef.current.startsWith('hi')) langCode = 'hi-IN';
+        else if (languageRef.current.startsWith('te')) langCode = 'te-IN';
+        else if (languageRef.current.startsWith('en')) langCode = 'en-IN';
+        recognition.lang = langCode;
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          setActiveEngine('browser_api');
+          setError(null);
+        };
+
+        recognition.onresult = (event: any) => {
+          let currentInterim = '';
+          let finalizedTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const item = event.results[i];
+            const text = item[0]?.transcript || '';
+
+            if (item.isFinal) {
+              finalizedTranscript += (finalizedTranscript ? ' ' : '') + text;
+            } else {
+              currentInterim += (currentInterim ? ' ' : '') + text;
             }
-          } catch (err) {
-            console.warn('Backend audio transcription error:', err);
           }
-        }
-      };
 
-      recorder.start(3500); // 3.5s smooth intervals
-      setActiveEngine('backend_audio');
-    } catch (e) {
-      console.warn('Could not start MediaRecorder fallback:', e);
-    }
-  }, [language, onSegmentCaptured, sessionId]);
+          if (finalizedTranscript.trim()) {
+            const enhanced = enhanceClassroomText(finalizedTranscript);
+            interimBufferRef.current = '';
+            setInterimText('');
+            if (onInterimCapturedRef.current) onInterimCapturedRef.current('');
+            onSegmentCapturedRef.current(enhanced, true);
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+          }
 
-  const initRecognition = useCallback(() => {
-    if (!SpeechRecognitionAPI) return null;
+          if (currentInterim.trim()) {
+            interimBufferRef.current = currentInterim.trim();
+            setInterimText(currentInterim);
+            if (onInterimCapturedRef.current) {
+              onInterimCapturedRef.current(currentInterim);
+            }
 
-    const recognition = new SpeechRecognitionAPI();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 3; // Allow engine to disambiguate intermediate words
+            // Flush interim if teacher takes a natural breath (1.4s pause)
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = setTimeout(() => {
+              if (isListeningRef.current && interimBufferRef.current.trim()) {
+                flushCurrentSpeech();
+              }
+            }, 1400);
+          }
+        };
 
-    // Format language correctly for browser engine
-    let langCode = 'en-IN';
-    if (language.startsWith('hi')) langCode = 'hi-IN';
-    else if (language.startsWith('te')) langCode = 'te-IN';
-    else if (language.startsWith('en')) langCode = 'en-IN';
-    recognition.lang = langCode;
+        recognition.onerror = (e: any) => {
+          if (e.error === 'no-speech') {
+            // Normal silence; do not stop
+            return;
+          }
+          console.warn('Speech recognition notice:', e.error);
+          if (isListeningRef.current) {
+            safeRestart();
+          }
+        };
 
-    recognition.onstart = () => {
-      setIsListening(true);
-      setActiveEngine('browser_api');
-      setError(null);
-    };
-
-    recognition.onresult = (event: any) => {
-      let currentInterim = '';
-      let finalizedTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const item = event.results[i];
-        const text = item[0]?.transcript || '';
-
-        if (item.isFinal) {
-          finalizedTranscript += (finalizedTranscript ? ' ' : '') + text;
-        } else {
-          currentInterim += (currentInterim ? ' ' : '') + text;
-        }
-      }
-
-      // If speech engine declared a chunk final
-      if (finalizedTranscript.trim()) {
-        const enhanced = enhanceClassroomText(finalizedTranscript);
-        lastProcessedTextRef.current = finalizedTranscript.trim();
-        interimBufferRef.current = '';
-        setInterimText('');
-        if (onInterimCaptured) onInterimCaptured('');
-        onSegmentCaptured(enhanced, true);
-        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-      }
-
-      // Handle ongoing speech (interim)
-      if (currentInterim.trim()) {
-        interimBufferRef.current = currentInterim.trim();
-        setInterimText(currentInterim);
-        if (onInterimCaptured) {
-          onInterimCaptured(currentInterim);
-        }
-
-        // Auto-flush interim if teacher takes a natural breath (1.6s pause)
-        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-        silenceTimerRef.current = setTimeout(() => {
-          if (isListeningRef.current && interimBufferRef.current.trim()) {
+        recognition.onend = () => {
+          // Flush any pending interim speech
+          if (interimBufferRef.current.trim()) {
             flushCurrentSpeech();
           }
-        }, 1600);
-      }
-    };
 
-    recognition.onerror = (e: any) => {
-      // Ignore common non-fatal events like no-speech
-      if (e.error === 'no-speech') {
-        return;
-      }
-      console.warn('Speech recognition status event:', e.error);
-
-      if (e.error === 'network' || e.error === 'aborted') {
-        // Quick reconnect rather than hard error
-        if (isListeningRef.current) {
-          setTimeout(() => {
-            if (isListeningRef.current && recognitionRef.current) {
-              try {
-                recognitionRef.current.start();
-              } catch (err) {}
-            }
-          }, 300);
-        }
-      } else {
-        setError(`Speech engine notice: ${e.error}`);
-        if (sessionId && mediaStreamRef.current && activeEngine !== 'backend_audio') {
-          startBackendAudioCapture(mediaStreamRef.current);
-        }
-      }
-    };
-
-    recognition.onend = () => {
-      // Flush any lingering interim buffer before restarting
-      if (interimBufferRef.current.trim()) {
-        flushCurrentSpeech();
-      }
-
-      // Seamlessly keep microphone continuous so it never drops off after a few phrases
-      if (isListeningRef.current) {
-        try {
-          recognition.start();
-        } catch (err) {
-          // If restart fails, seamlessly fallback to backend capture
-          if (sessionId && mediaStreamRef.current) {
-            startBackendAudioCapture(mediaStreamRef.current);
+          // In Chrome/Edge, continuous recognition ends periodically or after silence.
+          // Immediately restart so the teacher's mic stays ON indefinitely until manually stopped!
+          if (isListeningRef.current) {
+            safeRestart();
+          } else {
+            setIsListening(false);
+            setActiveEngine('idle');
           }
-        }
-      } else {
-        setIsListening(false);
-        setActiveEngine('idle');
-      }
-    };
+        };
 
-    return recognition;
-  }, [SpeechRecognitionAPI, activeEngine, flushCurrentSpeech, language, onInterimCaptured, onSegmentCaptured, sessionId, startBackendAudioCapture]);
+        recognitionRef.current = recognition;
+        recognition.start();
+      } catch (err) {
+        console.warn('Recognition start exception, retrying in 400ms:', err);
+        if (isListeningRef.current) {
+          restartTimerRef.current = setTimeout(safeRestart, 400);
+        }
+      }
+    }, 150);
+  }, [SpeechRecognitionAPI, flushCurrentSpeech]);
 
   const startListening = useCallback(async () => {
     setError(null);
@@ -276,21 +239,9 @@ export const useSpeechRecognition = ({
       setIsListening(true);
 
       if (SpeechRecognitionAPI) {
-        const recognition = initRecognition();
-        recognitionRef.current = recognition;
-        if (recognition) {
-          try {
-            recognition.start();
-          } catch (err) {
-            console.warn('Recognition start exception:', err);
-          }
-        }
+        safeRestart();
       } else {
-        if (sessionId) {
-          startBackendAudioCapture(stream);
-        } else {
-          setError('Speech capture ready once room session connects.');
-        }
+        setError('Browser Web Speech API not supported. Use Chrome or Edge.');
       }
     } catch (err: any) {
       setHasMicPermission(false);
@@ -299,18 +250,22 @@ export const useSpeechRecognition = ({
       isListeningRef.current = false;
       setActiveEngine('idle');
     }
-  }, [SpeechRecognitionAPI, initRecognition, sessionId, startBackendAudioCapture]);
+  }, [SpeechRecognitionAPI, safeRestart]);
 
   const stopListening = useCallback(() => {
     isListeningRef.current = false;
     setIsListening(false);
     setActiveEngine('idle');
     setInterimText('');
-    if (onInterimCaptured) onInterimCaptured('');
+    if (onInterimCapturedRef.current) onInterimCapturedRef.current('');
 
     if (silenceTimerRef.current) {
       clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = null;
+    }
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
     }
 
     if (interimBufferRef.current.trim()) {
@@ -319,29 +274,31 @@ export const useSpeechRecognition = ({
 
     if (recognitionRef.current) {
       try {
-        recognitionRef.current.stop();
+        recognitionRef.current.abort();
       } catch (e) {}
       recognitionRef.current = null;
-    }
-
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      try {
-        mediaRecorderRef.current.stop();
-      } catch (e) {}
-      mediaRecorderRef.current = null;
     }
 
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
     }
-  }, [flushCurrentSpeech, onInterimCaptured]);
+  }, [flushCurrentSpeech]);
 
+  // Clean unmount only
   useEffect(() => {
     return () => {
-      stopListening();
+      isListeningRef.current = false;
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (e) {}
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
     };
-  }, [stopListening]);
+  }, []);
 
   return {
     isListening,

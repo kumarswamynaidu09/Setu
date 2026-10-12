@@ -87,9 +87,13 @@ async def post_manual_caption(
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Active session not found or unauthorized")
 
+    # Calculate next sequential segment_index accurately from DB
+    existing_count = db.query(CaptionSegment).filter(CaptionSegment.session_id == session.id).count()
+    computed_index = existing_count + 1
+
     segment = CaptionSegment(
         session_id=session.id,
-        segment_index=caption_in.segment_index,
+        segment_index=caption_in.segment_index if caption_in.segment_index and caption_in.segment_index > existing_count else computed_index,
         text=caption_in.text,
         original_text=caption_in.text,
         is_corrected=False,
