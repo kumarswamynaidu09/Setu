@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./setu_classroom.db")
     
     # Audio & STT Settings
-    STT_ENGINE: str = os.getenv("SETU_STT_ENGINE", "hybrid") # hybrid / client-stream / backend
+    STT_ENGINE: str = os.getenv("SETU_STT_ENGINE", "hybrid") # hybrid / deepgram / sarvam / browser
+    DEEPGRAM_API_KEY: str = os.getenv("DEEPGRAM_API_KEY", "")
+    SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY", "")
     ALLOWED_ORIGINS: list[str] = ["*"]
     
     # Storage
