@@ -1,13 +1,21 @@
 import logging
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.models.database import engine, Base, SessionLocal
-from app.models.models import School, User, ClassRoom, Lesson, LessonSection, UsageMetric
+from app.models.models import School, User, ClassRoom, Lesson, LessonSection, UsageMetric, DisabilityProfile
 from app.core.security import get_password_hash
 
 logger = logging.getLogger("setu.seed")
 
 def init_db_and_seed():
     Base.metadata.create_all(bind=engine)
+    # Ensure columns added to existing tables are present in SQLite
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN onboarding_completed BOOLEAN DEFAULT 0"))
+            conn.commit()
+        except Exception:
+            pass
     db = SessionLocal()
     try:
         # Check if already seeded

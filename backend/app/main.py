@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.seed import init_db_and_seed
-from app.routers import auth, classes, lessons, sessions, announcements, questions, coordinator, speech
+from app.routers import auth, classes, lessons, sessions, announcements, questions, coordinator, speech, onboarding
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,6 +50,7 @@ app.include_router(announcements.router, prefix=settings.API_V1_STR)
 app.include_router(questions.router, prefix=settings.API_V1_STR)
 app.include_router(coordinator.router, prefix=settings.API_V1_STR)
 app.include_router(speech.router, prefix=settings.API_V1_STR)
+app.include_router(onboarding.router, prefix=settings.API_V1_STR)
 
 # Also expose websocket router at root level if accessed directly
 app.include_router(speech.router, prefix="")

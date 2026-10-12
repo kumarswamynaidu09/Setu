@@ -1,4 +1,15 @@
-export type Role = 'teacher' | 'coordinator' | 'admin' | 'student';
+export type Role = 'teacher' | 'coordinator' | 'admin' | 'student' | 'adult_learner';
+
+export type DisabilityType = 'hearing' | 'vision' | 'motor' | 'cognitive' | 'speech' | 'none';
+
+export interface DisabilityProfile {
+  id?: string;
+  user_id?: string;
+  disability_type: DisabilityType;
+  severity: 'mild' | 'moderate' | 'severe';
+  preferences_json?: string;
+  created_at?: string;
+}
 
 export interface User {
   id: string;
@@ -6,6 +17,8 @@ export interface User {
   full_name: string;
   role: Role;
   school_id?: string | null;
+  onboarding_completed?: boolean;
+  disability_profiles?: DisabilityProfile[];
   created_at: string;
 }
 

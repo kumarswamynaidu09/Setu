@@ -77,7 +77,7 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
         email=user_in.email.lower(),
         hashed_password=hashed_pw,
         full_name=user_in.full_name,
-        role=user_in.role if user_in.role in ["teacher", "coordinator"] else "teacher",
+        role=user_in.role if user_in.role in ["teacher", "coordinator", "student", "adult_learner"] else "teacher",
         school_id=school_id
     )
     db.add(new_user)

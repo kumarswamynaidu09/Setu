@@ -30,11 +30,26 @@ class User(Base):
     role = Column(String(50), default="teacher", nullable=False) # teacher, coordinator, admin
     school_id = Column(String(36), ForeignKey("schools.id"), nullable=True)
     is_active = Column(Boolean, default=True)
+    onboarding_completed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     school = relationship("School", back_populates="users")
     classes = relationship("ClassRoom", back_populates="teacher")
     sessions = relationship("LiveSession", back_populates="teacher")
+    disability_profiles = relationship("DisabilityProfile", back_populates="user", cascade="all, delete-orphan")
+
+
+class DisabilityProfile(Base):
+    __tablename__ = "disability_profiles"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    disability_type = Column(String(50), nullable=False)  # hearing, vision, motor, cognitive, speech, none
+    severity = Column(String(20), default="moderate")  # mild, moderate, severe
+    preferences_json = Column(Text, nullable=True)  # JSON string of specific preferences
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", back_populates="disability_profiles")
 
 
 class ClassRoom(Base):

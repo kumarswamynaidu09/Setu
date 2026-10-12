@@ -9,7 +9,7 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children, currentRoute, navigate }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-[#0F172A]">
+    <div className="min-h-screen flex flex-col bg-[#FAFAF8] text-[#1A1A2E]">
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

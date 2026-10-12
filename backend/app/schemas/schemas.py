@@ -7,7 +7,7 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
     full_name: str = Field(..., min_length=2)
-    role: str = Field(default="teacher") # teacher, coordinator
+    role: str = Field(default="teacher") # teacher, coordinator, student, adult_learner
     school_code: Optional[str] = None
 
 class UserLogin(BaseModel):
@@ -30,6 +30,44 @@ class UserProfile(BaseModel):
     school_id: Optional[str] = None
     created_at: datetime
 
+    model_config = ConfigDict(from_attributes=True)
+
+# --- Disability & Onboarding Schemas ---
+class DisabilityProfileCreate(BaseModel):
+    disability_type: str  # hearing, vision, motor, cognitive, speech, none
+    severity: str = "moderate"
+    preferences_json: Optional[str] = None
+
+class DisabilityProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    onboarding_completed: Optional[bool] = None
+    disabilities: Optional[List[DisabilityProfileCreate]] = None
+
+class DisabilityProfileResponse(BaseModel):
+    id: str
+    user_id: str
+    disability_type: str
+    severity: str
+    preferences_json: Optional[str] = None
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class OnboardingRequest(BaseModel):
+    full_name: str = Field(..., min_length=2)
+    email: EmailStr
+    password: str = Field(..., min_length=6)
+    role: str = "student"  # student, adult_learner, teacher
+    disabilities: List[DisabilityProfileCreate] = []
+
+class UserProfileFull(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    role: str
+    school_id: Optional[str] = None
+    onboarding_completed: bool
+    disability_profiles: List[DisabilityProfileResponse] = []
+    created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 # --- School Schemas ---

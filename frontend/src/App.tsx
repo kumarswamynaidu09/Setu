@@ -6,6 +6,9 @@ import { LiveClassroomProvider } from './context/LiveClassroomContext';
 import { AppShell } from './components/AppShell';
 import { Navbar } from './components/Navbar';
 import { LandingPage } from './pages/LandingPage';
+import { SignUpPage } from './pages/SignUpPage';
+import { Dashboard } from './pages/Dashboard';
+import { ProfileSetup } from './pages/ProfileSetup';
 import { AboutPage } from './pages/AboutPage';
 import { AccessibilityPage } from './pages/AccessibilityPage';
 import { PrivacyPage } from './pages/PrivacyPage';
@@ -56,6 +59,9 @@ const AppContent: React.FC = () => {
       <Navbar currentRoute={currentRoute} navigate={navigate} />
 
       {currentRoute === 'home' && <LandingPage navigate={navigate} />}
+      {currentRoute === 'signup' && <SignUpPage navigate={navigate} />}
+      {currentRoute === 'dashboard' && <Dashboard navigate={navigate} />}
+      {currentRoute === 'profile-setup' && <ProfileSetup navigate={navigate} />}
       {currentRoute === 'about' && <AboutPage />}
       {currentRoute === 'accessibility' && <AccessibilityPage />}
       {currentRoute === 'privacy' && <PrivacyPage />}
