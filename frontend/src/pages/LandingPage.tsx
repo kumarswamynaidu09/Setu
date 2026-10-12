@@ -1,17 +1,14 @@
 import React from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useAuth } from '../context/AuthContext';
-import { BridgeMotif } from '../components/BridgeMotif';
-import { PrimaryActionCard } from '../components/PrimaryActionCard';
 import {
   Radio,
   BookOpen,
   MessageSquare,
+  ArrowRight,
   ShieldCheck,
   CheckCircle2,
-  Volume2,
-  ArrowRight,
-  Sparkles
+  Volume2
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -19,7 +16,6 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
-  const { t } = useAccessibility();
   const { quickDemoLogin } = useAuth();
 
   const handleLaunchTeacherDemo = async () => {
@@ -32,153 +28,145 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
   };
 
   return (
-    <div className="space-y-16 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-16">
       
-      {/* Hero Section — Bright Clean Civic Public Service Identity */}
-      <section className="max-w-5xl mx-auto px-4 text-center space-y-6 pt-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E6F4F1] border border-[#BCE3DC] text-[#0D7377] text-xs font-bold shadow-2xs">
-          <BridgeMotif size="sm" variant="teal" />
-          <span>SevaFirst Innovation Challenge 2026 • Theme 03: Swasth & Samavesh Bharat</span>
-        </div>
+      {/* Hero Section */}
+      <section className="text-center space-y-5 pt-4">
+        <span className="badge-ios-blue text-xs font-semibold px-3 py-1">
+          Swasth & Samavesh Bharat • SevaFirst 2026
+        </span>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15]">
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
           Learning without barriers.
         </h1>
 
-        <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          One classroom. Many ways to learn. SETU enables teachers to teach once while students access the lesson through <strong className="text-slate-900">Live Captions</strong>, <strong className="text-slate-900">Audio narration</strong>, <strong className="text-slate-900">Assisted speech</strong>, or <strong className="text-slate-900">Step cards</strong>.
+        <p className="text-base sm:text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
+          One teacher workflow. Four simultaneous accessible pathways: <strong className="text-slate-800">Live Captions</strong>, <strong className="text-slate-800">Audio narration</strong>, <strong className="text-slate-800">Assisted speech</strong>, and <strong className="text-slate-800">Step cards</strong>.
         </p>
 
-        {/* Primary Action Buttons */}
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={() => navigate('student-join')}
-            className="w-full sm:w-auto btn-civic-primary text-base py-3 px-8 rounded-xl shadow-sm hover:shadow-md"
+            className="btn-ios-primary w-full sm:w-auto text-base py-3 px-8"
           >
-            <Radio className="w-5 h-5 text-teal-100" />
-            <span>Join a Live Class</span>
+            <span>Join a Classroom</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
             onClick={handleLaunchTeacherDemo}
-            className="w-full sm:w-auto btn-civic-secondary text-base py-3 px-7 rounded-xl font-bold"
+            className="btn-ios-secondary w-full sm:w-auto text-base py-3 px-6"
           >
-            <span>Launch Teacher Studio</span>
-            <ArrowRight className="w-4 h-4 text-[#0D7377]" />
+            <span>Teacher Studio Demo</span>
           </button>
-        </div>
-
-        <div className="text-xs text-slate-600 flex items-center justify-center gap-4 pt-2 flex-wrap">
-          <span className="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#0D7377]" />
-            WCAG 2.2 Level AA
-          </span>
-          <span className="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#0D7377]" />
-            Zero child personal data collection
-          </span>
-          <span className="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#0D7377]" />
-            Runs on teacher laptop & student phones
-          </span>
         </div>
       </section>
 
-      {/* Student Primary Actions: 3 Obvious Choices */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <span className="badge-navy text-xs mb-2">Student Experience</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Three Simple Ways to Engage
+      {/* 3 Student Actions — Clean iOS Cards */}
+      <section className="space-y-4">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-slate-900">
+            Three Ways to Learn
           </h2>
-          <p className="text-sm text-slate-600 mt-1 max-w-lg mx-auto">
-            Choose what you want to do today. No account or password required.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Choose what you need. Zero registration required.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PrimaryActionCard
-            title="1. Join a Live Class"
-            description="Enter your classroom code or scan the teacher's screen to see live captions, listen to audio, and follow the lesson steps."
-            icon={<Radio className="w-6 h-6" />}
-            actionText="Enter Classroom Code"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Card 1 */}
+          <div
             onClick={() => navigate('student-join')}
-            accentVariant="teal"
-            badge="LIVE SESSION"
-          />
-
-          <PrimaryActionCard
-            title="2. Learn Lessons"
-            description="Explore approved textbooks and science modules with audio descriptions of diagrams, text scaling, and simplified summaries."
-            icon={<BookOpen className="w-6 h-6" />}
-            actionText="Browse Lesson Library"
-            onClick={() => navigate('student-join')}
-            accentVariant="navy"
-          />
-
-          <PrimaryActionCard
-            title="3. Communicate & Ask"
-            description="Participate in class discussions using tap-to-speak non-verbal phrase boards, assisted speech, or private teacher questions."
-            icon={<MessageSquare className="w-6 h-6" />}
-            actionText="Open Communication Board"
-            onClick={() => navigate('student-join')}
-            accentVariant="saffron"
-          />
-        </div>
-      </section>
-
-      {/* Multimodal Accessibility Layer Explanation */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="civic-card p-8 md:p-10 bg-white border border-slate-200 shadow-sm">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="space-y-3 max-w-xl">
-              <span className="badge-mint text-xs">Architectural Principle</span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                One Teacher Workflow. Four Simultaneous Pathways.
+            role="button"
+            tabIndex={0}
+            className="ios-card p-6 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 transition-all"
+          >
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+                <Radio className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-slate-900 mb-1">
+                1. Join Live Class
               </h3>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Teachers in Indian government schools should not have to manage multiple complex accessibility tools. SETU creates an inclusive layer so every student learns together in the mainstream classroom.
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Connect using your teacher's 6-character room code to see live real-time captions and lesson steps.
               </p>
             </div>
+            <div className="mt-6 flex items-center text-xs font-semibold text-blue-600">
+              <span>Enter room code</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 w-full lg:w-auto shrink-0">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-bold text-[#0D7377] mb-1">01 • READ</div>
-                <div className="font-bold text-slate-900 text-sm">Live Captions</div>
-                <div className="text-xs text-slate-600 mt-1">High contrast & dyslexia fonts</div>
+          {/* Card 2 */}
+          <div
+            onClick={() => navigate('student-join')}
+            role="button"
+            tabIndex={0}
+            className="ios-card p-6 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 transition-all"
+          >
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                <BookOpen className="w-5 h-5" />
               </div>
+              <h3 className="font-bold text-lg text-slate-900 mb-1">
+                2. Listen & Read
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Text-to-speech audio narration with spoken diagram descriptions and high-contrast font scaling.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center text-xs font-semibold text-indigo-600">
+              <span>Explore lessons</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </div>
+          </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-bold text-[#0D7377] mb-1">02 • LISTEN</div>
-                <div className="font-bold text-slate-900 text-sm">Audio Descriptions</div>
-                <div className="text-xs text-slate-600 mt-1">Text-to-speech with diagram descriptions</div>
+          {/* Card 3 */}
+          <div
+            onClick={() => navigate('student-join')}
+            role="button"
+            tabIndex={0}
+            className="ios-card p-6 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 transition-all"
+          >
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+                <MessageSquare className="w-5 h-5" />
               </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-bold text-[#0D7377] mb-1">03 • RESPOND</div>
-                <div className="font-bold text-slate-900 text-sm">Assisted Speech (AAC)</div>
-                <div className="text-xs text-slate-600 mt-1">Tap-to-speak phrases & questions</div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-bold text-[#0D7377] mb-1">04 • FOLLOW</div>
-                <div className="font-bold text-slate-900 text-sm">Step Cards</div>
-                <div className="text-xs text-slate-600 mt-1">Structured checklists with teacher sync</div>
-              </div>
+              <h3 className="font-bold text-lg text-slate-900 mb-1">
+                3. Communicate
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Tap-to-speak assistive communication board (AAC) and private questions sent directly to your teacher.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center text-xs font-semibold text-amber-600">
+              <span>Open phrase board</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Public Service Commitment */}
-      <section className="max-w-4xl mx-auto px-4 text-center space-y-4">
-        <BridgeMotif size="lg" variant="teal" className="mx-auto" />
-        <h3 className="text-xl font-bold text-slate-900">
-          Built for Indian Mainstream Government Schools
-        </h3>
-        <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-          SETU operates over local networks without requiring costly enterprise hardware or student personal smartphones. Compliant with RPwD Act 2016 and NEP 2020 inclusive education mandates.
-        </p>
+      {/* Public Service Core Information */}
+      <section className="ios-card p-8 bg-white border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-1.5 max-w-lg">
+          <span className="badge-ios-green text-xs font-semibold">
+            Universal Design
+          </span>
+          <h3 className="text-xl font-bold text-slate-900">
+            One lesson taught. Four accessible pathways.
+          </h3>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Designed for mainstream Indian government schools under RPwD Act 2016 and NEP 2020. Operates reliably on teacher laptops and student devices.
+          </p>
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          <span className="badge-ios-blue text-xs">WCAG 2.2 AA</span>
+          <span className="badge-ios-blue text-xs">Zero Child Profiling</span>
+          <span className="badge-ios-blue text-xs">Ephemeral Audio</span>
+        </div>
       </section>
     </div>
   );

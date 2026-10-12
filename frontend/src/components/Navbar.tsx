@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { BridgeMotif } from './BridgeMotif';
 import { AccessibilityToolbar } from './AccessibilityToolbar';
 import {
   LogIn,
@@ -11,7 +10,8 @@ import {
   Building2,
   Menu,
   X,
-  Users
+  User,
+  Sliders
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -19,6 +19,10 @@ interface NavbarProps {
   navigate: (route: string) => void;
 }
 
+/**
+ * Clean, minimalistic Apple / iOS-style navigation bar.
+ * No visual clutter, no bloated pills or redundant badges.
+ */
 export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,55 +31,50 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const isCoordinator = isAuthenticated && user?.role === 'coordinator';
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-black/5 transition-all">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-14">
           
-          {/* Logo & Brand Identity */}
+          {/* Logo — Clean Apple minimal style */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('home')}
-              className="flex items-center gap-2.5 text-left rounded-lg p-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D7377]"
+              className="flex items-center gap-2 group text-left"
               aria-label="SETU Home"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#E6F4F1] flex items-center justify-center text-[#0D7377] border border-[#BCE3DC]">
-                <BridgeMotif size="md" variant="teal" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 font-bold text-sm">
+                S
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-xl tracking-tight text-slate-900">
-                    SETU
-                  </span>
-                  <span className="badge-saffron text-[10px] hidden sm:inline-flex">
-                    Swasth & Samavesh
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-medium hidden md:block">
-                  One Classroom. Many Ways to Learn.
-                </p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-bold text-lg text-slate-900 tracking-tight">
+                  SETU
+                </span>
+                <span className="text-xs text-slate-400 font-medium hidden sm:inline">
+                  Classroom
+                </span>
               </div>
             </button>
           </div>
 
-          {/* Desktop Role-Aware Navigation */}
-          <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
+          {/* Clean Segmented Navigation Links */}
+          <nav className="hidden md:flex items-center p-1 bg-black/[0.04] rounded-full" aria-label="Main Navigation">
             <button
               onClick={() => navigate('home')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+              className={`px-4 py-1 rounded-full text-xs font-semibold transition-all ${
                 currentRoute === 'home'
-                  ? 'bg-[#E6F4F1] text-[#0D7377]'
-                  : 'text-slate-700 hover:bg-slate-100'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Home
+              Overview
             </button>
 
             <button
               onClick={() => navigate('student-join')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+              className={`px-4 py-1 rounded-full text-xs font-semibold transition-all ${
                 currentRoute === 'student-join'
-                  ? 'bg-[#E6F4F1] text-[#0D7377]'
-                  : 'text-slate-700 hover:bg-slate-100'
+                  ? 'bg-white text-blue-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Join Class
@@ -85,23 +84,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <>
                 <button
                   onClick={() => navigate('teacher-dashboard')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                  className={`px-4 py-1 rounded-full text-xs font-semibold transition-all ${
                     currentRoute === 'teacher-dashboard'
-                      ? 'bg-[#E6F4F1] text-[#0D7377]'
-                      : 'text-slate-700 hover:bg-slate-100'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  Teacher Workspace
+                  Workspace
                 </button>
                 <button
                   onClick={() => navigate('classes')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                  className={`px-4 py-1 rounded-full text-xs font-semibold transition-all ${
                     currentRoute === 'classes'
-                      ? 'bg-[#E6F4F1] text-[#0D7377]'
-                      : 'text-slate-700 hover:bg-slate-100'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  Classes & Lessons
+                  Lessons
                 </button>
               </>
             )}
@@ -109,67 +108,52 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             {isCoordinator && (
               <button
                 onClick={() => navigate('coordinator')}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-4 py-1 rounded-full text-xs font-semibold transition-all ${
                   currentRoute === 'coordinator'
-                    ? 'bg-[#E6F4F1] text-[#0D7377]'
-                    : 'text-slate-700 hover:bg-slate-100'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Building2 className="w-4 h-4 text-[#0D7377]" />
-                <span>Coordinator Portal</span>
+                Coordinator
               </button>
             )}
-
-            <button
-              onClick={() => navigate('about')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                currentRoute === 'about'
-                  ? 'bg-[#E6F4F1] text-[#0D7377]'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              About
-            </button>
           </nav>
 
-          {/* Right Header Utilities: Accessibility Toolbar + Auth */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Action Icons & Auth */}
+          <div className="flex items-center gap-2">
             <AccessibilityToolbar />
 
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-700 hidden lg:inline-block">
-                  {user?.full_name}
+                <span className="text-xs font-medium text-slate-600 hidden lg:inline">
+                  {user?.full_name?.split(' ')[0]}
                 </span>
                 <button
                   onClick={() => {
                     logout();
                     navigate('home');
                   }}
-                  className="btn-civic-secondary text-xs py-1.5 px-2.5 rounded-lg"
+                  className="p-1.5 rounded-full hover:bg-black/5 text-slate-500 hover:text-slate-800 transition-colors"
                   aria-label="Sign out"
                   title="Sign out"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-slate-600" />
-                  <span className="hidden sm:inline">Sign Out</span>
+                  <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => navigate('login')}
-                className="btn-civic-primary text-xs py-1.5 px-3 rounded-lg"
+                className="btn-ios-primary text-xs py-1.5 px-3.5"
               >
-                <LogIn className="w-3.5 h-3.5" />
                 <span>Teacher Sign In</span>
               </button>
             )}
 
-            {/* Mobile Menu Trigger */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Toggle navigation menu"
-              aria-expanded={mobileMenuOpen}
+              className="md:hidden p-1.5 text-slate-700 rounded-lg hover:bg-black/5"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -177,32 +161,32 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
+        <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl px-4 py-3 space-y-1">
           <button
             onClick={() => { navigate('home'); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2 rounded-lg font-semibold text-slate-900 hover:bg-slate-100"
+            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-900 rounded-xl hover:bg-black/5"
           >
-            Home
+            Overview
           </button>
           <button
             onClick={() => { navigate('student-join'); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2 rounded-lg font-semibold text-[#0D7377] hover:bg-slate-100"
+            className="w-full text-left px-3 py-2 text-sm font-semibold text-blue-600 rounded-xl hover:bg-blue-50"
           >
-            Join Live Class
+            Join Class
           </button>
           {isTeacher && (
             <>
               <button
                 onClick={() => { navigate('teacher-dashboard'); setMobileMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 rounded-lg font-semibold text-slate-900 hover:bg-slate-100"
+                className="w-full text-left px-3 py-2 text-sm font-medium text-slate-900 rounded-xl hover:bg-black/5"
               >
                 Teacher Workspace
               </button>
               <button
                 onClick={() => { navigate('classes'); setMobileMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 rounded-lg font-semibold text-slate-900 hover:bg-slate-100"
+                className="w-full text-left px-3 py-2 text-sm font-medium text-slate-900 rounded-xl hover:bg-black/5"
               >
                 Classes & Lessons
               </button>
@@ -211,17 +195,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
           {isCoordinator && (
             <button
               onClick={() => { navigate('coordinator'); setMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-lg font-semibold text-slate-900 hover:bg-slate-100"
+              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-900 rounded-xl hover:bg-black/5"
             >
-              Coordinator Portal
+              Coordinator
             </button>
           )}
-          <button
-            onClick={() => { navigate('about'); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2 rounded-lg font-semibold text-slate-600 hover:bg-slate-100"
-          >
-            About Initiative
-          </button>
         </div>
       )}
     </header>

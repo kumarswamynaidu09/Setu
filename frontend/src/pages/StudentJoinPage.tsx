@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useLiveClassroom } from '../context/LiveClassroomContext';
-import { PageHeader } from '../components/PageHeader';
-import { BridgeMotif } from '../components/BridgeMotif';
-import {
-  KeyRound,
-  User,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Sparkles,
-  QrCode
-} from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface StudentJoinPageProps {
   navigate: (route: string, data?: any) => void;
@@ -35,7 +25,7 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomCode.trim()) {
-      setError('Please enter your 6-character room code');
+      setError('Please enter your classroom room code');
       return;
     }
     setError(null);
@@ -54,7 +44,7 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || 'Could not join classroom. Please check the code.');
+        throw new Error(data.detail || 'Classroom not found. Please verify the code.');
       }
 
       localStorage.setItem('setu_student_token', data.student_token);
@@ -63,49 +53,43 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
       joinRoom(data.session_id, data.room_code, 'student', nickname.trim() || 'Student');
       navigate('student-session', { sessionData: data });
     } catch (err: any) {
-      setError(err.message || 'Unable to join classroom. Check the code and try again.');
+      setError(err.message || 'Unable to join classroom. Check code and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-md mx-auto px-4 py-12 space-y-6">
       
-      <PageHeader
-        title="Join a Classroom"
-        subtitle="Enter the 6-character room code from your teacher's board to access live captions, audio, and lesson steps."
-        badgeText="Zero Registration Required"
-        badgeVariant="mint"
-      />
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          Join a Classroom
+        </h1>
+        <p className="text-sm text-slate-500 max-w-sm mx-auto">
+          Enter the room code shared by your teacher to access live captions, audio, and lesson steps.
+        </p>
+      </div>
 
-      <div className="civic-card p-8 bg-white dark:bg-[#142738] shadow-sm space-y-6">
-        
+      {/* iOS Clean Card */}
+      <div className="ios-card p-7 space-y-6">
         {error && (
           <div
             role="alert"
-            className="p-4 rounded-xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-sm font-semibold flex items-start gap-2.5"
+            className="p-3.5 rounded-2xl bg-red-50 text-red-700 text-xs font-semibold"
           >
-            <span className="shrink-0 font-bold">!</span>
-            <span>{error}</span>
+            {error}
           </div>
         )}
 
-        <form onSubmit={handleJoin} className="space-y-6">
-          {/* Room Code Input */}
-          <div className="space-y-2">
-            <label
-              htmlFor="room-code-input"
-              className="block text-sm font-bold text-[#19324A] dark:text-white flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
-                <KeyRound className="w-4 h-4 text-[#0A625D]" />
-                Classroom Code
-              </span>
-              <span className="text-xs text-[#526575] font-normal">
-                Example: SETU89
-              </span>
-            </label>
+        <form onSubmit={handleJoin} className="space-y-5">
+          {/* Room Code */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-semibold text-slate-700">
+              <label htmlFor="room-code-input">Classroom Code</label>
+              <span className="text-slate-400 font-normal">e.g. SETU89</span>
+            </div>
             <input
               id="room-code-input"
               type="text"
@@ -113,59 +97,46 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
               maxLength={8}
               value={roomCode}
               onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-              placeholder="ENTER ROOM CODE"
-              className="w-full text-center tracking-widest text-2xl font-mono uppercase font-bold p-3.5 rounded-xl border-2 border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] text-[#19324A] dark:text-white focus:border-[#0A625D] focus:outline-none transition-colors"
+              placeholder="ROOM CODE"
+              className="ios-input w-full text-center tracking-widest text-2xl font-bold uppercase placeholder:text-slate-300"
             />
           </div>
 
-          {/* Student Nickname (Optional) */}
-          <div className="space-y-2">
-            <label
-              htmlFor="student-nickname-input"
-              className="block text-sm font-bold text-[#19324A] dark:text-white flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
-                <User className="w-4 h-4 text-[#0A625D]" />
-                Your First Name or Nickname (Optional)
-              </span>
-              <span className="text-xs text-[#526575] font-normal">
-                No personal details needed
-              </span>
-            </label>
+          {/* Nickname */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-semibold text-slate-700">
+              <label htmlFor="student-nickname-input">Your First Name (Optional)</label>
+              <span className="text-slate-400 font-normal">No password needed</span>
+            </div>
             <input
               id="student-nickname-input"
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="e.g., Aarav, Priya"
-              className="w-full p-3 text-base rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26] text-[#19324A] dark:text-white focus:border-[#0A625D] focus:outline-none transition-colors"
+              placeholder="e.g. Aarav, Priya"
+              className="ios-input w-full"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Enter Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-civic-primary py-3.5 text-base rounded-xl font-bold shadow-sm hover:shadow-md disabled:opacity-50"
+            className="btn-ios-primary w-full py-3.5 text-base font-semibold"
           >
             {loading ? (
-              <span>Connecting to Classroom...</span>
+              <span>Connecting...</span>
             ) : (
               <>
                 <span>Enter Classroom</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 ml-1" />
               </>
             )}
           </button>
         </form>
 
-        {/* Child Safety & Privacy Assurance */}
-        <div className="pt-4 border-t border-[#E6ECE8] dark:border-[#1F364C] flex items-center justify-between text-xs text-[#526575] dark:text-[#9BB0C1]">
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-[#0A625D]" />
-            Zero child data tracking or profiling
-          </span>
-          <span>DPDP Act 2023 Compliant</span>
+        <div className="pt-2 text-center text-xs text-slate-400">
+          Zero data collected • No permanent account required
         </div>
       </div>
     </div>
