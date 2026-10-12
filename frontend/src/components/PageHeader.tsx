@@ -31,11 +31,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <span className={badgeClasses}>{badgeText}</span>
           </div>
         )}
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#19324A] dark:text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A1A2E] tracking-tight">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-sm sm:text-base text-[#526575] dark:text-[#9BB0C1] max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-[#6B7280] max-w-2xl leading-relaxed">
             {subtitle}
           </p>
         )}

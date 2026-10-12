@@ -396,3 +396,75 @@
 .ios-input::placeholder {
   color: var(--color-text-tertiary);
 }
+
+/* ====== CIVIC COMPATIBILITY CLASSES (HIGH CONTRAST & WARM THEME) ====== */
+
+.civic-card {
+  background-color: #FFFFFF !important;
+  color: #1A1A2E !important;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.btn-civic-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 107, 74, 0.25);
+}
+
+.btn-civic-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-civic-secondary {
+  background-color: #F4F4F5;
+  color: #1A1A2E !important;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.65rem 1.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.btn-civic-secondary:hover {
+  background-color: #E4E4E7;
+}
+
+/* Badges */
+.badge-mint {
+  background-color: #E8F8EE;
+  color: #2ECC71;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.badge-navy {
+  background-color: #EBF3FC;
+  color: #4A90D9;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.badge-saffron {
+  background-color: #FFF6E5;
+  color: #F59E0B;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}

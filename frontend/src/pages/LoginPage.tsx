@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { PageHeader } from '../components/PageHeader';
-import { BridgeMotif } from '../components/BridgeMotif';
-import { LogIn, BookOpen, Building2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { LogIn, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
 import type { Role } from '../types';
 
 interface LoginPageProps {
@@ -63,6 +62,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
   };
 
   const handleDemoSignIn = async (demoRole: 'teacher' | 'coordinator') => {
+    setError(null);
     setLoading(true);
     try {
       await quickDemoLogin(demoRole);
@@ -79,30 +79,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-xl mx-auto px-4 py-8 sm:py-12 space-y-8">
       
       <PageHeader
         title={isRegister ? 'Staff Registration' : 'Teacher & Staff Sign In'}
-        subtitle="Access your teacher studio or school coordinator portal to manage classrooms and lessons."
+        subtitle="Access your teacher studio or school coordinator portal to manage inclusive classrooms and lessons."
         badgeText="Institutional Portal"
         badgeVariant="navy"
       />
 
-      <div className="civic-card p-8 bg-white dark:bg-[#142738] shadow-sm space-y-6">
+      {/* Clean White Card with Warm Borders & High Contrast */}
+      <div className="ios-card p-6 sm:p-8 bg-white border border-black/[0.06] shadow-sm space-y-6">
         
         {error && (
           <div
             role="alert"
-            className="p-3.5 rounded-xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-sm font-semibold"
+            className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-semibold"
           >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {isRegister && (
             <div>
-              <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+              <label className="block text-xs font-bold text-[#1A1A2E] mb-1.5">
                 Full Name
               </label>
               <input
@@ -111,13 +112,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Smt. Anita Sharma"
-                className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
+                className="ios-input w-full"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+            <label className="block text-xs font-bold text-[#1A1A2E] mb-1.5">
               Institutional Email
             </label>
             <input
@@ -126,12 +127,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="teacher.anita@setu.edu.in"
-              className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
+              className="ios-input w-full"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+            <label className="block text-xs font-bold text-[#1A1A2E] mb-1.5">
               Password
             </label>
             <input
@@ -140,41 +141,58 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
+              className="ios-input w-full"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-civic-primary py-3 text-sm rounded-xl font-bold mt-2 shadow-xs"
+            className="w-full btn-ios-primary py-3.5 text-sm font-bold shadow-md shadow-[#FF6B4A]/20 disabled:opacity-50"
           >
-            {isRegister ? 'Complete Registration' : 'Sign In to Workspace'}
+            <span>{isRegister ? 'Complete Registration' : 'Sign In to Workspace'}</span>
+            <ArrowRight className="w-4 h-4 ml-1" />
           </button>
         </form>
 
         {/* Quick Demo Sign In Buttons for Judges / Evaluators */}
-        <div className="pt-4 border-t border-[#E6ECE8] dark:border-[#1F364C] space-y-3">
-          <div className="text-xs font-bold text-[#526575] dark:text-[#9BB0C1] uppercase tracking-wider text-center">
+        <div className="pt-6 border-t border-black/[0.06] space-y-3">
+          <div className="text-xs font-bold text-[#6B7280] uppercase tracking-wider text-center">
             Evaluator One-Click Sign In
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => handleDemoSignIn('teacher')}
-              className="btn-civic-secondary text-xs py-2 px-3 rounded-xl justify-center font-bold"
+              disabled={loading}
+              className="min-h-[44px] px-4 py-2.5 rounded-full bg-slate-50 hover:bg-slate-100 text-[#1A1A2E] border border-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             >
+              <UserCheck className="w-3.5 h-3.5 text-[#FF6B4A]" />
               <span>Demo Teacher (Anita)</span>
             </button>
             <button
               type="button"
               onClick={() => handleDemoSignIn('coordinator')}
-              className="btn-civic-secondary text-xs py-2 px-3 rounded-xl justify-center font-bold"
+              disabled={loading}
+              className="min-h-[44px] px-4 py-2.5 rounded-full bg-slate-50 hover:bg-slate-100 text-[#1A1A2E] border border-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#4A90D9]" />
               <span>Demo Coordinator (Sunita)</span>
             </button>
           </div>
         </div>
+
+        {/* Toggle sign in / register */}
+        <div className="text-center pt-2">
+          <button
+            type="button"
+            onClick={() => setIsRegister(!isRegister)}
+            className="text-xs text-[#6B7280] hover:text-[#1A1A2E] font-medium underline underline-offset-4"
+          >
+            {isRegister ? 'Already have an account? Sign in' : 'Need a staff account? Register here'}
+          </button>
+        </div>
+
       </div>
     </div>
   );
