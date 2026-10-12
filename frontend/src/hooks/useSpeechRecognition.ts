@@ -83,6 +83,7 @@ export const useSpeechRecognition = ({
   const recognitionRef = useRef<any>(null);
   const isListeningRef = useRef(false);
   const restartTimerRef = useRef<any>(null);
+  const watchdogTimerRef = useRef<any>(null);
 
   const win = typeof window !== 'undefined' ? (window as unknown as IWindow) : null;
   const SpeechRecognitionAPI = win?.SpeechRecognition || win?.webkitSpeechRecognition;
@@ -91,6 +92,16 @@ export const useSpeechRecognition = ({
     if (!isListeningRef.current || !SpeechRecognitionAPI) return;
 
     try {
+      // Abort old instance cleanly if still around
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.onend = null;
+          recognitionRef.current.onerror = null;
+          recognitionRef.current.abort();
+        } catch (e) {}
+        recognitionRef.current = null;
+      }
+
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = true;
       recognition.interimResults = true;
@@ -135,24 +146,37 @@ export const useSpeechRecognition = ({
       };
 
       recognition.onerror = (e: any) => {
-        if (e.error === 'no-speech') return; // Silence is normal
-        console.warn('SpeechRecognition error:', e.error);
+        // 'no-speech' is triggered during natural silence; ignore it completely
+        if (e.error === 'no-speech') return;
+        
+        console.warn('SpeechRecognition error event:', e.error);
         if (e.error === 'not-allowed') {
           setError('Microphone permission denied. Please allow microphone in browser.');
           isListeningRef.current = false;
           setIsListening(false);
+          return;
+        }
+
+        // For network, aborted, or audio-capture glitches, schedule an immediate restart
+        if (isListeningRef.current) {
+          if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = setTimeout(() => {
+            if (isListeningRef.current) createAndStart();
+          }, 150);
         }
       };
 
       recognition.onend = () => {
-        // Continuous listening: immediate respawn as long as user hasn't clicked "Stop Mic"
+        // INFINITE CONTINUOUS RECORDING:
+        // When Chrome/Edge automatically closes the stream on quiet pauses,
+        // immediately respawn a fresh session so the mic never goes dead!
         if (isListeningRef.current) {
           if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
           restartTimerRef.current = setTimeout(() => {
             if (isListeningRef.current) {
               createAndStart();
             }
-          }, 100);
+          }, 50);
         } else {
           setIsListening(false);
         }
@@ -161,12 +185,12 @@ export const useSpeechRecognition = ({
       recognitionRef.current = recognition;
       recognition.start();
     } catch (err: any) {
-      console.warn('Recognition start exception:', err);
+      console.warn('Recognition start exception, retrying:', err);
       if (isListeningRef.current) {
         if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
         restartTimerRef.current = setTimeout(() => {
           if (isListeningRef.current) createAndStart();
-        }, 300);
+        }, 250);
       }
     }
   }, [SpeechRecognitionAPI]);
@@ -183,6 +207,14 @@ export const useSpeechRecognition = ({
       isListeningRef.current = true;
       setIsListening(true);
       createAndStart();
+
+      // Background watchdog: guarantees mic never stays off if browser quietly drops recognition
+      if (watchdogTimerRef.current) clearInterval(watchdogTimerRef.current);
+      watchdogTimerRef.current = setInterval(() => {
+        if (isListeningRef.current && !recognitionRef.current) {
+          createAndStart();
+        }
+      }, 2000);
     } catch (err: any) {
       setHasMicPermission(false);
       setError('Microphone access blocked. Click the lock/tune icon near the URL bar to allow microphone.');
@@ -201,9 +233,15 @@ export const useSpeechRecognition = ({
       clearTimeout(restartTimerRef.current);
       restartTimerRef.current = null;
     }
+    if (watchdogTimerRef.current) {
+      clearInterval(watchdogTimerRef.current);
+      watchdogTimerRef.current = null;
+    }
 
     if (recognitionRef.current) {
       try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
         recognitionRef.current.abort();
       } catch (e) {}
       recognitionRef.current = null;
@@ -214,8 +252,13 @@ export const useSpeechRecognition = ({
     return () => {
       isListeningRef.current = false;
       if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+      if (watchdogTimerRef.current) clearInterval(watchdogTimerRef.current);
       if (recognitionRef.current) {
-        try { recognitionRef.current.abort(); } catch (e) {}
+        try {
+          recognitionRef.current.onend = null;
+          recognitionRef.current.onerror = null;
+          recognitionRef.current.abort();
+        } catch (e) {}
       }
     };
   }, []);
