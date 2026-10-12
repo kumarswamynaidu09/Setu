@@ -63,11 +63,30 @@ export const TeacherLiveClassroom: React.FC<TeacherLiveClassroomProps> = ({ navi
   const [answeringQuestionId, setAnsweringQuestionId] = useState<string | null>(null);
   const [responseText, setResponseText] = useState('');
 
+  const [activeSessionInfo, setActiveSessionInfo] = useState<any>(sessionData || null);
+
   useEffect(() => {
-    if (!sessionId && sessionData?.id) {
-      joinRoom(sessionData.id, sessionData.room_code, 'teacher', 'Teacher');
+    if (!activeSessionInfo) {
+      try {
+        const stored = localStorage.getItem('setu_teacher_session');
+        if (stored) {
+          setActiveSessionInfo(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.warn('Failed to parse stored teacher session:', e);
+      }
     }
-  }, [joinRoom, sessionId, sessionData]);
+  }, [activeSessionInfo]);
+
+  const currentSession = sessionData || activeSessionInfo;
+
+  useEffect(() => {
+    const sid = currentSession?.id;
+    const code = currentSession?.room_code;
+    if (!sessionId && sid) {
+      joinRoom(sid, code || 'ROOM', 'teacher', 'Teacher');
+    }
+  }, [joinRoom, sessionId, currentSession]);
 
   const handleSegmentCaptured = async (text: string, isFinal: boolean) => {
     if (isFinal && text.trim()) {

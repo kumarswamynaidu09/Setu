@@ -74,6 +74,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
       const sessionData = await res.json();
       if (!res.ok) throw new Error(sessionData.detail || 'Failed to start session');
 
+      localStorage.setItem('setu_teacher_session', JSON.stringify(sessionData));
       joinRoom(sessionData.id, sessionData.room_code, 'teacher', user?.full_name || 'Teacher');
       navigate('teacher-live', { session: sessionData });
     } catch (err: any) {

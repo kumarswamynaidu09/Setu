@@ -54,6 +54,12 @@ app.include_router(speech.router, prefix=settings.API_V1_STR)
 # Also expose websocket router at root level if accessed directly
 app.include_router(speech.router, prefix="")
 
+# Explicit WebSocket route at /ws/live/{session_id}
+@app.websocket("/ws/live/{session_id}")
+async def websocket_ws_live(websocket: speech.WebSocket, session_id: str, role: str = "student", nickname: str = "Student"):
+    await speech.websocket_live_channel(websocket, session_id, role=role, nickname=nickname)
+
+
 @app.get("/api/health")
 def health_check():
     return {

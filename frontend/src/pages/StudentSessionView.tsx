@@ -57,15 +57,35 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
   const [questionSentNotification, setQuestionSentNotification] = useState<string | null>(null);
 
   // Lesson data
-  const lesson: Lesson | null = sessionData?.lesson || null;
+  const [activeSessionInfo, setActiveSessionInfo] = useState<any>(sessionData || null);
+
+  useEffect(() => {
+    if (!activeSessionInfo) {
+      try {
+        const stored = localStorage.getItem('setu_student_session');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setActiveSessionInfo(parsed);
+        }
+      } catch (e) {
+        console.warn('Failed to parse stored session:', e);
+      }
+    }
+  }, [activeSessionInfo]);
+
+  const currentSession = sessionData || activeSessionInfo;
+  const lesson: Lesson | null = currentSession?.lesson || null;
   const captionsContainerRef = useRef<HTMLDivElement>(null);
 
   // Restore room connection if refreshing directly on session screen
   useEffect(() => {
-    if (!sessionId && sessionData?.session_id) {
-      joinRoom(sessionData.session_id, sessionData.room_code, 'student', sessionData.student_nickname || 'Student');
+    const sid = currentSession?.session_id;
+    const code = currentSession?.room_code || 'ROOM';
+    const nick = currentSession?.student_nickname || 'Student';
+    if (!sessionId && sid) {
+      joinRoom(sid, code, 'student', nick);
     }
-  }, [joinRoom, sessionId, sessionData]);
+  }, [joinRoom, sessionId, currentSession]);
 
   // Sync section with teacher if "Follow Teacher" is on
   useEffect(() => {
