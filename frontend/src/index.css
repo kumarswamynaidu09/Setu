@@ -2,52 +2,59 @@
 
 @layer base {
   :root {
-    --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono-matrix: 'Space Mono', monospace;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono-code: 'Space Mono', monospace;
 
-    /* Nothing Subtle Palette (Light) */
-    --bg-main: #f8f8f9;
-    --bg-surface: #ffffff;
-    --bg-subtle: #f1f1f4;
-    --border-main: #e2e2e8;
-    --border-subtle: #ececf0;
-    --text-main: #09090b;
-    --text-muted: #52525b;
-    --accent-red: #d71921; /* Signature Nothing Crimson */
-    --accent-red-subtle: #fee2e2;
-    --accent-amber: #d97706;
-    --accent-teal: #0d9488;
+    /* Civic Calm Color Palette */
+    --color-navy: #19324A;        /* Institutional Navy */
+    --color-teal: #0A625D;        /* Inclusive Teal */
+    --color-saffron: #B07822;     /* Warm Saffron */
+    --color-bg: #F7F9F8;          /* Civic Calm Light Background */
+    --color-mint: #E8F5F2;        /* Soft Mint */
+    --color-slate: #526575;       /* Supporting Slate */
+    --color-surface: #FFFFFF;     /* White card/surface */
+    --color-border: #D8E2DC;      /* Calm border */
+    --color-border-subtle: #E6ECE8;
+
+    --bg-main: var(--color-bg);
+    --bg-surface: var(--color-surface);
+    --bg-subtle: var(--color-mint);
+    --border-main: var(--color-border);
+    --border-subtle: var(--color-border-subtle);
+    --text-main: #142332;
+    --text-muted: var(--color-slate);
+    --accent-primary: var(--color-teal);
+    --accent-secondary: var(--color-navy);
+    --accent-saffron: var(--color-saffron);
   }
 
-  /* Dark / Obsidian Nothing Palette */
+  /* Dark Civic Calm Palette */
   .theme-dark {
-    --bg-main: #09090b;
-    --bg-surface: #121215;
-    --bg-subtle: #1c1c21;
-    --border-main: #27272a;
-    --border-subtle: #1f1f23;
-    --text-main: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --accent-red: #ef4444;
-    --accent-red-subtle: rgba(239, 68, 68, 0.15);
-    --accent-amber: #f59e0b;
-    --accent-teal: #14b8a6;
+    --bg-main: #0E1B26;
+    --bg-surface: #142738;
+    --bg-subtle: #19324A;
+    --border-main: #25435E;
+    --border-subtle: #1F364C;
+    --text-main: #F0F6F5;
+    --text-muted: #9BB0C1;
+    --accent-primary: #12948C;
+    --accent-secondary: #E8F5F2;
+    --accent-saffron: #DCA248;
   }
 
   /* High Contrast AAA Mode */
   .theme-high-contrast {
-    --bg-main: #ffffff;
-    --bg-surface: #ffffff;
-    --bg-subtle: #f4f4f5;
+    --bg-main: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #F0F4F2;
     --border-main: #000000;
     --border-subtle: #000000;
     --text-main: #000000;
-    --text-muted: #18181b;
-    --accent-red: #991b1b;
-    --accent-red-subtle: #fee2e2;
-    --accent-amber: #92400e;
-    --accent-teal: #0f766e;
+    --text-muted: #1A2E3B;
+    --accent-primary: #05403D;
+    --accent-secondary: #0D1C2A;
+    --accent-saffron: #7A5314;
   }
 
   body {
@@ -56,9 +63,17 @@
     color: var(--text-main);
   }
 
+  /* Language-specific typography support */
+  body[data-lang="hi"] {
+    font-family: 'Noto Sans Devanagari', 'Public Sans', sans-serif;
+  }
+  body[data-lang="te"] {
+    font-family: 'Noto Sans Telugu', 'Public Sans', sans-serif;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
   }
 
   /* Dyslexia friendly font style option */
@@ -66,13 +81,13 @@
     font-family: 'Comic Sans MS', 'Trebuchet MS', 'Verdana', sans-serif !important;
     letter-spacing: 0.08em;
     word-spacing: 0.15em;
-    line-height: 1.8;
+    line-height: 1.85;
   }
 
-  /* Focus visible accessibility requirement */
+  /* Strong visible focus indicator (WCAG 2.2 AA) */
   *:focus-visible {
-    outline: 2px solid var(--accent-red) !important;
-    outline-offset: 3px !important;
+    outline: 3px solid var(--accent-primary) !important;
+    outline-offset: 2px !important;
   }
 
   /* Reduced motion */
@@ -88,130 +103,170 @@
   /* Skip to content link */
   .skip-link {
     position: absolute;
-    top: -40px;
-    left: 0;
-    background: #09090b;
-    color: #ffffff;
-    padding: 8px 16px;
+    top: -50px;
+    left: 12px;
+    background: #19324A;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 0 0 8px 8px;
     z-index: 9999;
     transition: top 0.2s;
-    font-family: var(--font-mono-matrix);
-    font-size: 12px;
     font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   .skip-link:focus {
     top: 0;
   }
 }
 
-/* Subtle Nothing Dot-Grid Background */
-.bg-nothing-grid {
-  background-image: radial-gradient(rgba(113, 113, 122, 0.18) 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Civic Calm Cards & Panels */
+.civic-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  border-radius: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.theme-dark .bg-nothing-grid {
-  background-image: radial-gradient(rgba(161, 161, 170, 0.12) 1px, transparent 1px);
-  background-size: 24px 24px;
+.civic-card:hover {
+  border-color: #BACBCE;
 }
 
-/* Nothing Glyph Dot Indicator */
-.glyph-dot {
-  width: 6px;
-  height: 6px;
+/* Primary Institutional Button */
+.btn-civic-primary {
+  background-color: #0A625D;
+  color: #FFFFFF;
+  border: 1px solid #084E4A;
+  border-radius: 0.625rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-civic-primary:hover {
+  background-color: #084E4A;
+}
+
+.btn-civic-primary:active {
+  transform: translateY(1px);
+}
+
+/* Secondary Institutional Button */
+.btn-civic-secondary {
+  background-color: #FFFFFF;
+  color: #19324A;
+  border: 1.5px solid #D8E2DC;
+  border-radius: 0.625rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-civic-secondary:hover {
+  background-color: #F7F9F8;
+  border-color: #19324A;
+}
+
+/* Saffron Accent Badge / Tag */
+.badge-saffron {
+  background-color: #FEF7EE;
+  color: #8C5E16;
+  border: 1px solid #F6D8A8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
   border-radius: 9999px;
-  background-color: var(--accent-red);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Institutional Navy Badge */
+.badge-navy {
+  background-color: #EBF2F7;
+  color: #19324A;
+  border: 1px solid #CFDFEC;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Soft Mint Badge */
+.badge-mint {
+  background-color: #E8F5F2;
+  color: #0A625D;
+  border: 1px solid #BFE5DC;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Civic Calm Live Indicator */
+.live-pulse {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: #0A625D;
   display: inline-block;
 }
 
-.glyph-dot-pulse {
-  animation: glyph-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.live-pulse::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 9999px;
+  border: 2px solid #0A625D;
+  opacity: 0.6;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
-@keyframes glyph-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
   }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.85);
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
   }
 }
 
-/* Nothing Monospace Tape Label / Tag */
-.nothing-label {
-  font-family: var(--font-mono-matrix);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Modular Card Bevel & Border */
-.nothing-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-main);
-  border-radius: 1.5rem;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.nothing-card:hover {
-  border-color: rgba(113, 113, 122, 0.4);
-}
-
-/* Nothing Segmented Mechanical Button */
-.nothing-btn-primary {
-  font-family: var(--font-mono-matrix);
-  background-color: #09090b;
-  color: #ffffff;
-  border: 1px solid #27272a;
-  border-radius: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  transition: all 0.15s ease;
-}
-
-.theme-dark .nothing-btn-primary {
-  background-color: #f4f4f5;
-  color: #09090b;
-  border-color: #ffffff;
-}
-
-.nothing-btn-primary:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-}
-
-.nothing-btn-primary:active {
-  transform: translateY(0);
-}
-
-/* Nothing Red Accent Button */
-.nothing-btn-accent {
-  font-family: var(--font-mono-matrix);
-  background-color: var(--accent-red);
-  color: #ffffff;
-  border-radius: 0.875rem;
-  font-weight: 700;
-  transition: all 0.15s ease;
-}
-
-.nothing-btn-accent:hover {
-  opacity: 0.9;
-}
-
-/* Custom Minimal Scrollbar */
+/* Custom Clean Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
-  border-radius: 3px;
+  background: #CBD5E1;
+  border-radius: 4px;
 }
 .theme-dark ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+  background: #334E68;
 }

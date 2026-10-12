@@ -1,93 +1,86 @@
 import React from 'react';
-import { Target, Award } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
+import { BridgeMotif } from '../components/BridgeMotif';
+import { Target, Award, CheckCircle2, ShieldCheck, HeartHandshake } from 'lucide-react';
 
 export const AboutPage: React.FC = () => {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 text-zinc-800 dark:text-zinc-200 font-body">
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-[10px] font-bold mb-4">
-          <span className="glyph-dot" />
-          <span>PRODUCT IDENTITY // SEVAFIRST 2026</span>
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
+      
+      <PageHeader
+        title="About SETU"
+        subtitle="One classroom. Many ways to learn. A public-service digital accessibility initiative for inclusive Indian education."
+        badgeText="SevaFirst 2026 • Swasth & Samavesh Bharat"
+        badgeVariant="mint"
+      />
+
+      {/* Brand Statement & Vision */}
+      <div className="civic-card p-8 bg-white dark:bg-[#142738] shadow-sm space-y-4">
+        <div className="flex items-center gap-3">
+          <BridgeMotif size="lg" variant="teal" />
+          <div>
+            <h2 className="text-xl font-bold text-[#19324A] dark:text-white">
+              Brand Statement: Learning without barriers.
+            </h2>
+            <p className="text-sm text-[#0A625D] font-semibold">
+              Modern Indian public-service assistive architecture.
+            </p>
+          </div>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-bold font-heading text-zinc-950 dark:text-white tracking-tight">
-          What is SETU?
-        </h1>
-        <p className="mt-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-          SETU is an accessible, teacher-led multimodal classroom platform designed for mainstream Indian government schools under Theme 03 (Swasth & Samavesh Bharat).
+
+        <p className="text-sm leading-relaxed text-[#526575] dark:text-[#9BB0C1]">
+          In a mainstream Indian classroom, an instructor naturally presents using spoken lectures, textbooks, and blackboard notes. However, students experience diverse sensory and cognitive needs: hearing impairment, low vision, speech difficulties, and dyslexia.
+        </p>
+        <p className="text-sm leading-relaxed text-[#526575] dark:text-[#9BB0C1]">
+          SETU is not just an AI transcription tool or a corporate video call add-on. It is a <strong>teacher-led multimodal accessibility layer</strong> that translates one teacher-approved lesson into four simultaneous pathways (Read, Listen, Respond, Follow) without multiplying teacher workload.
         </p>
       </div>
 
-      {/* The Core Innovation */}
-      <section className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-3">
-        <div className="nothing-label text-[10px] text-red-500 font-bold">[ INNOVATION PRINCIPLE ]</div>
-        <h2 className="text-xl font-bold font-heading text-zinc-900 dark:text-white flex items-center gap-2">
-          <Target className="w-5 h-5 text-red-500" />
-          <span>The Core Innovation</span>
-        </h2>
-        <p className="text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          In typical Indian classrooms, teachers use a combination of blackboard writing and spoken lecture. Students with hearing impairment, low vision, reading difficulties, or speech challenges frequently struggle because the content is locked into a single sensory format.
-        </p>
-        <p className="text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          SETU does <strong>not</strong> claim to have invented transcription, TTS, or summarization. Our innovation is the <strong>unified classroom workflow</strong>: a teacher prepares or delivers one lesson, and SETU automatically unlocks four simultaneous accessible pathways without burdening the teacher with four different software tools.
-        </p>
-      </section>
-
-      {/* Differentiation Table */}
-      <section className="space-y-4">
-        <div className="nothing-label text-[10px] text-zinc-400 font-bold">[ COMPARISON MATRIX ]</div>
-        <h2 className="text-xl font-bold font-heading text-zinc-900 dark:text-white">
-          How SETU Differs From Generic Meeting Tools
-        </h2>
+      {/* Comparative Architecture Matrix */}
+      <div className="civic-card p-6 bg-white dark:bg-[#142738] shadow-sm space-y-4">
+        <h3 className="font-bold text-base text-[#19324A] dark:text-white">
+          Why Meeting Transcribers Fail in Mainstream Classrooms
+        </h3>
+        
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 font-mono">
+          <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-white font-bold border-b border-zinc-200 dark:border-zinc-800">
-                <th className="p-3.5">CAPABILITY</th>
-                <th className="p-3.5">MEETING TOOLS (MEET/TEAMS)</th>
-                <th className="p-3.5 text-red-500">SETU INCLUSIVE LAYER</th>
+              <tr className="border-b border-[#D8E2DC] text-[#19324A] dark:text-white font-bold bg-[#F7F9F8] dark:bg-[#0E1B26]">
+                <th className="p-3">Capability</th>
+                <th className="p-3">Generic Meeting Tools (Meet/Teams)</th>
+                <th className="p-3 text-[#0A625D]">SETU Inclusive Platform</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 font-normal">
+            <tbody className="divide-y divide-[#E6ECE8] text-[#526575] dark:text-[#9BB0C1]">
               <tr>
-                <td className="p-3.5 font-bold">Workflow Target</td>
-                <td className="p-3.5 text-zinc-400">Corporate remote video calls</td>
-                <td className="p-3.5 font-bold text-zinc-900 dark:text-white">Physical & hybrid Indian classrooms</td>
+                <td className="p-3 font-semibold text-[#19324A] dark:text-white">Target Context</td>
+                <td className="p-3">Corporate remote video calls</td>
+                <td className="p-3 font-semibold text-[#0A625D]">Physical & hybrid government schools</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold">Multimodal Output</td>
-                <td className="p-3.5 text-zinc-400">Live text captions only</td>
-                <td className="p-3.5 font-bold text-zinc-900 dark:text-white">Read, Listen (TTS & diagrams), Respond (AAC), Follow steps</td>
+                <td className="p-3 font-semibold text-[#19324A] dark:text-white">Student Registration</td>
+                <td className="p-3">Mandatory corporate accounts</td>
+                <td className="p-3 font-semibold text-[#0A625D]">Zero accounts (6-character code / QR)</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold">Teacher Caption Corrections</td>
-                <td className="p-3.5 text-zinc-400">Not supported; errors remain on screen</td>
-                <td className="p-3.5 font-bold text-zinc-900 dark:text-white">Real-time correction & instantaneous student broadcast</td>
+                <td className="p-3 font-semibold text-[#19324A] dark:text-white">Tactile Diagram Descriptions</td>
+                <td className="p-3">Unsupported</td>
+                <td className="p-3 font-semibold text-[#0A625D]">Integrated pedagogical audio descriptions</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold">Non-Verbal Participation</td>
-                <td className="p-3.5 text-zinc-400">Standard text chatbox</td>
-                <td className="p-3.5 font-bold text-zinc-900 dark:text-white">Augmentative & Alternative Communication (AAC) cards</td>
+                <td className="p-3 font-semibold text-[#19324A] dark:text-white">Assisted Speech (AAC)</td>
+                <td className="p-3">Text chat only</td>
+                <td className="p-3 font-semibold text-[#0A625D]">Tap-to-speak non-verbal phrase boards</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold">Child Privacy & Access</td>
-                <td className="p-3.5 text-zinc-400">Requires individual corporate accounts</td>
-                <td className="p-3.5 font-bold text-zinc-900 dark:text-white">Zero-data anonymous QR / 6-character room code join</td>
+                <td className="p-3 font-semibold text-[#19324A] dark:text-white">Child Data Protection</td>
+                <td className="p-3">Cloud telemetry logging</td>
+                <td className="p-3 font-semibold text-[#0A625D]">Zero profiling; ephemeral audio streams</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </section>
-
-      {/* Scope and Boundaries */}
-      <section className="bg-zinc-100 dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 space-y-2 font-body">
-        <div className="nothing-label text-[10px] text-zinc-400 font-bold">[ SCOPE // BOUNDARIES ]</div>
-        <h3 className="font-bold font-heading text-sm text-zinc-900 dark:text-white">
-          Educational Support, Not Medical Diagnosis
-        </h3>
-        <p className="text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-          SETU is an educational accessibility layer. It is <strong>not</strong> a medical device, diagnostic system, therapy platform, or replacement for certified special education personnel. It is designed to assist teachers in making mainstream classroom instruction accessible to all students.
-        </p>
-      </section>
+      </div>
     </div>
   );
 };

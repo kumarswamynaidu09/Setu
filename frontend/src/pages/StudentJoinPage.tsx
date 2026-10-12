@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useLiveClassroom } from '../context/LiveClassroomContext';
-import { Radio, ArrowRight, User, KeyRound } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
+import { BridgeMotif } from '../components/BridgeMotif';
+import {
+  KeyRound,
+  User,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Sparkles,
+  QrCode
+} from 'lucide-react';
 
 interface StudentJoinPageProps {
   navigate: (route: string, data?: any) => void;
@@ -25,7 +35,7 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomCode.trim()) {
-      setError('Please enter a room code');
+      setError('Please enter your 6-character room code');
       return;
     }
     setError(null);
@@ -44,7 +54,7 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || 'Could not join classroom');
+        throw new Error(data.detail || 'Could not join classroom. Please check the code.');
       }
 
       localStorage.setItem('setu_student_token', data.student_token);
@@ -60,83 +70,103 @@ export const StudentJoinPage: React.FC<StudentJoinPageProps> = ({ navigate, pref
   };
 
   return (
-    <div className="max-w-md mx-auto py-12 px-4 text-zinc-900 dark:text-zinc-100 font-body">
-      <div className="text-center mb-8">
-        <div className="w-12 h-12 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center mx-auto mb-3 shadow-xs">
-          <Radio className="w-5 h-5 text-red-500" />
-        </div>
-        <div className="nothing-label text-xs text-red-500 font-bold mb-1">
-          [ ACCESS PORTAL // ZERO REGISTRATION ]
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold font-heading">
-          {t.student.joinBtn}
-        </h1>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-          Enter your teacher's 6-character room code or scan the projected QR.
-        </p>
-      </div>
+    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      
+      <PageHeader
+        title="Join a Classroom"
+        subtitle="Enter the 6-character room code from your teacher's board to access live captions, audio, and lesson steps."
+        badgeText="Zero Registration Required"
+        badgeVariant="mint"
+      />
 
-      <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm font-mono">
+      <div className="civic-card p-8 bg-white dark:bg-[#142738] shadow-sm space-y-6">
+        
         {error && (
           <div
             role="alert"
-            className="p-3 mb-5 rounded-xl bg-red-950/20 border border-red-500/80 text-red-600 dark:text-red-400 text-xs font-bold"
+            className="p-4 rounded-xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-sm font-semibold flex items-start gap-2.5"
           >
-            {error}
+            <span className="shrink-0 font-bold">!</span>
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleJoin} className="space-y-5">
-          <div>
+        <form onSubmit={handleJoin} className="space-y-6">
+          {/* Room Code Input */}
+          <div className="space-y-2">
             <label
               htmlFor="room-code-input"
-              className="nothing-label block text-xs text-zinc-500 dark:text-zinc-400 mb-2 flex items-center gap-1.5"
+              className="block text-sm font-bold text-[#19324A] dark:text-white flex items-center justify-between"
             >
-              <KeyRound className="w-3.5 h-3.5 text-red-500" />
-              <span>( 01 ) ROOM CODE (6 CHARACTERS)</span>
+              <span className="flex items-center gap-1.5">
+                <KeyRound className="w-4 h-4 text-[#0A625D]" />
+                Classroom Code
+              </span>
+              <span className="text-xs text-[#526575] font-normal">
+                Example: SETU89
+              </span>
             </label>
             <input
               id="room-code-input"
               type="text"
               required
-              maxLength={10}
+              maxLength={8}
               value={roomCode}
               onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-              placeholder="SETU89"
-              className="w-full px-4 py-3.5 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-2xl font-mono font-bold tracking-widest text-center focus:ring-2 focus:ring-red-500 focus:outline-none uppercase"
+              placeholder="ENTER ROOM CODE"
+              className="w-full text-center tracking-widest text-2xl font-mono uppercase font-bold p-3.5 rounded-xl border-2 border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] text-[#19324A] dark:text-white focus:border-[#0A625D] focus:outline-none transition-colors"
             />
           </div>
 
-          <div>
+          {/* Student Nickname (Optional) */}
+          <div className="space-y-2">
             <label
-              htmlFor="nickname-input"
-              className="nothing-label block text-xs text-zinc-500 dark:text-zinc-400 mb-2 flex items-center gap-1.5"
+              htmlFor="student-nickname-input"
+              className="block text-sm font-bold text-[#19324A] dark:text-white flex items-center justify-between"
             >
-              <User className="w-3.5 h-3.5 text-zinc-400" />
-              <span>( 02 ) TEMPORARY NICKNAME (OPTIONAL)</span>
+              <span className="flex items-center gap-1.5">
+                <User className="w-4 h-4 text-[#0A625D]" />
+                Your First Name or Nickname (Optional)
+              </span>
+              <span className="text-xs text-[#526575] font-normal">
+                No personal details needed
+              </span>
             </label>
             <input
-              id="nickname-input"
+              id="student-nickname-input"
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="e.g. Arya"
-              className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
+              placeholder="e.g., Aarav, Priya"
+              className="w-full p-3 text-base rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26] text-[#19324A] dark:text-white focus:border-[#0A625D] focus:outline-none transition-colors"
             />
-            <p className="text-[10px] text-zinc-400 mt-1">
-              No account created. Data is discarded when the session ends.
-            </p>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 nothing-btn-primary text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 shadow-sm"
+            className="w-full btn-civic-primary py-3.5 text-base rounded-xl font-bold shadow-sm hover:shadow-md disabled:opacity-50"
           >
-            <span>{loading ? 'CONNECTING...' : 'ENTER LIVE ROOM'}</span>
-            <ArrowRight className="w-4 h-4 text-red-500" />
+            {loading ? (
+              <span>Connecting to Classroom...</span>
+            ) : (
+              <>
+                <span>Enter Classroom</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
+
+        {/* Child Safety & Privacy Assurance */}
+        <div className="pt-4 border-t border-[#E6ECE8] dark:border-[#1F364C] flex items-center justify-between text-xs text-[#526575] dark:text-[#9BB0C1]">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-[#0A625D]" />
+            Zero child data tracking or profiling
+          </span>
+          <span>DPDP Act 2023 Compliant</span>
+        </div>
       </div>
     </div>
   );

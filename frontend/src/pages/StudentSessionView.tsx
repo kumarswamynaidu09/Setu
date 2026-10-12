@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useLiveClassroom } from '../context/LiveClassroomContext';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import { StatusIndicator } from '../components/StatusIndicator';
+import { BridgeMotif } from '../components/BridgeMotif';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import type { StudentMode, Lesson, LessonSection } from '../types';
 import {
@@ -17,7 +19,10 @@ import {
   Send,
   Play,
   Pause,
-  Image as ImageIcon
+  Image as ImageIcon,
+  HelpCircle,
+  Sparkles,
+  Check
 } from 'lucide-react';
 
 interface StudentSessionViewProps {
@@ -25,16 +30,18 @@ interface StudentSessionViewProps {
   sessionData?: any;
 }
 
-export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionData }) => {
-  const { t, speechRate } = useAccessibility();
+export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionData, navigate }) => {
+  const { t, speechRate, fontSize } = useAccessibility();
   const {
+    sessionId,
     roomCode,
     connectionStatus,
     captions,
     announcements,
     questions,
     currentSectionIndex: teacherSectionIndex,
-    submitQuestion
+    submitQuestion,
+    joinRoom
   } = useLiveClassroom();
 
   const { speak, pause, resume, cancel, isSpeaking, isPaused } = useSpeechSynthesis();
@@ -45,13 +52,20 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
   const [autoScrollCaptions, setAutoScrollCaptions] = useState(true);
   const [showSimplified, setShowSimplified] = useState(false);
 
-  // AAC state
-  const [customAACMessage, setCustomAACMessage] = useState('');
-  const [aacSentNotification, setAacSentNotification] = useState<string | null>(null);
+  // AAC / Question input state
+  const [customQuestion, setCustomQuestion] = useState('');
+  const [questionSentNotification, setQuestionSentNotification] = useState<string | null>(null);
 
   // Lesson data
   const lesson: Lesson | null = sessionData?.lesson || null;
   const captionsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Restore room connection if refreshing directly on session screen
+  useEffect(() => {
+    if (!sessionId && sessionData?.session_id) {
+      joinRoom(sessionData.session_id, sessionData.room_code, 'student', sessionData.student_nickname || 'Student');
+    }
+  }, [joinRoom, sessionId, sessionData]);
 
   // Sync section with teacher if "Follow Teacher" is on
   useEffect(() => {
@@ -60,7 +74,7 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
     }
   }, [followTeacher, teacherSectionIndex]);
 
-  // Auto-scroll to bottom of captions
+  // Auto-scroll captions
   useEffect(() => {
     if (autoScrollCaptions && captionsContainerRef.current) {
       captionsContainerRef.current.scrollTop = captionsContainerRef.current.scrollHeight;
@@ -69,26 +83,33 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
 
   const activeSection: LessonSection | undefined = lesson?.sections?.[studentSectionIndex];
 
-  // AAC Phrases Preset (Nothing Style)
+  // AAC Phrase board items
   const aacPhrases = [
-    { id: 'pleaseRepeat', text: t.aac.pleaseRepeat, code: '01', icon: '🔁' },
-    { id: 'whyDayNight', text: t.aac.whyDayNight, code: '02', icon: '🌍' },
-    { id: 'needTime', text: t.aac.needTime, code: '03', icon: '⏳' },
-    { id: 'understood', text: t.aac.understood, code: '04', icon: '✅' },
-    { id: 'notUnderstood', text: t.aac.notUnderstood, code: '05', icon: '❓' },
-    { id: 'mayIAnswer', text: t.aac.mayIAnswer, code: '06', icon: '🙋' },
-    { id: 'showDiagram', text: t.aac.showDiagram, code: '07', icon: '🖼️' },
-    { id: 'needHelp', text: t.aac.needHelp, code: '08', icon: '🆘' }
+    { id: 'repeat', text: 'Please repeat that', icon: '🔁' },
+    { id: 'needTime', text: 'I need a moment to write', icon: '⏳' },
+    { id: 'understood', text: 'I understand this concept', icon: '✅' },
+    { id: 'confused', text: 'Could you explain that again?', icon: '❓' },
+    { id: 'answer', text: 'May I answer the question?', icon: '🙋' },
+    { id: 'diagram', text: 'Please show the diagram again', icon: '🖼️' },
+    { id: 'louder', text: 'Could you please speak a little louder?', icon: '🔊' },
+    { id: 'help', text: 'I need teacher assistance', icon: '🆘' }
   ];
 
   const handleSendAAC = async (content: string) => {
     cancel();
+    speak(content);
     await submitQuestion(content, 'aac_phrase');
-    setAacSentNotification(content);
-    setCustomAACMessage('');
-    setTimeout(() => {
-      setAacSentNotification(null);
-    }, 6000);
+    setQuestionSentNotification(`Sent to teacher: "${content}"`);
+    setTimeout(() => setQuestionSentNotification(null), 5000);
+  };
+
+  const handleSendCustomQuestion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customQuestion.trim()) return;
+    await submitQuestion(customQuestion.trim(), 'custom_text');
+    setQuestionSentNotification(`Question sent to teacher.`);
+    setCustomQuestion('');
+    setTimeout(() => setQuestionSentNotification(null), 5000);
   };
 
   const handleTTSPlaySection = () => {
@@ -112,144 +133,158 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
     speak(`Audio description for diagram: ${activeSection.image_pedagogical_description}`);
   };
 
+  const modes = [
+    { id: 'read', label: '1. Read (Captions)', icon: BookOpen },
+    { id: 'listen', label: '2. Listen (Audio)', icon: Volume2 },
+    { id: 'respond', label: '3. Communicate (AAC)', icon: MessageSquare },
+    { id: 'follow', label: '4. Follow Steps', icon: ListOrdered }
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-4 space-y-4 text-zinc-900 dark:text-zinc-100 min-h-screen">
+    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
       
-      {/* Session Header & Status in Nothing Industrial Design */}
-      <div className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xs flex items-center justify-between gap-3 font-mono">
-        <div className="flex items-center gap-2.5">
-          <span className={`w-2.5 h-2.5 rounded-full ${
-            connectionStatus === 'connected'
-              ? 'bg-red-500 animate-pulse'
-              : connectionStatus === 'reconnecting'
-              ? 'bg-amber-500 animate-bounce'
-              : 'bg-zinc-400'
-          }`} />
+      {/* Session Header Card (Civic Calm) */}
+      <div className="civic-card p-5 bg-white dark:bg-[#142738] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#E8F5F2] dark:bg-[#0A625D]/30 flex items-center justify-center text-[#0A625D] dark:text-[#E8F5F2] border border-[#BFE5DC]">
+            <BridgeMotif size="md" variant="teal" />
+          </div>
           <div>
-            <div className="nothing-label text-[9px] text-zinc-400">
-              {sessionData?.class_name || 'CLASS 6 SCIENCE'}
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-[#19324A] dark:text-white">
+                {sessionData?.class_name || 'Class 6 Science'}
+              </h1>
+              <span className="badge-navy text-xs">
+                Room: {roomCode || 'SETU'}
+              </span>
             </div>
-            <div className="text-xs font-bold">
-              ROOM // <span className="text-red-500">{roomCode || 'SETU89'}</span>
+            <div className="flex items-center gap-3 mt-1 text-xs text-[#526575] dark:text-[#9BB0C1]">
+              <StatusIndicator status={connectionStatus} />
+              <span>•</span>
+              <span>{lesson?.title || 'Interactive Lesson'}</span>
             </div>
           </div>
         </div>
 
-        {/* Sync Mode Pill */}
-        <div className="flex items-center gap-1.5">
+        {/* Teacher Follow Toggle */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setFollowTeacher(!followTeacher)}
             aria-pressed={followTeacher}
-            className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all flex items-center gap-1.5 ${
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
               followTeacher
-                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border-zinc-900'
-                : 'bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-zinc-800 dark:text-zinc-400'
+                ? 'bg-[#E8F5F2] text-[#0A625D] border-[#BFE5DC] dark:bg-[#0A625D]/30 dark:text-teal-200'
+                : 'bg-white text-[#526575] border-[#D8E2DC] hover:bg-[#F7F9F8]'
             }`}
           >
-            <Radio className={`w-3 h-3 ${followTeacher ? 'text-red-500 animate-pulse' : ''}`} />
-            <span>{followTeacher ? 'SYNCED TO TEACHER' : 'SELF-PACED'}</span>
+            {followTeacher ? '✓ Follow Teacher Steps' : 'Self-Paced Navigation'}
           </button>
         </div>
       </div>
 
-      {/* Announcements Alert Banner */}
+      {/* Announcements Banner if any */}
       {announcements.length > 0 && (
         <AnnouncementBanner announcement={announcements[0]} />
       )}
 
-      {/* 4 Accessible Interaction Modes Selector (Nothing Segmented Switch) */}
-      <div
-        role="tablist"
-        aria-label="Classroom accessibility mode"
-        className="grid grid-cols-4 gap-1.5 bg-zinc-100 dark:bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 font-mono"
-      >
-        {[
-          { id: 'read', label: 'READ', sub: '01', icon: BookOpen },
-          { id: 'listen', label: 'LISTEN', sub: '02', icon: Volume2 },
-          { id: 'respond', label: 'RESPOND', sub: '03', icon: MessageSquare },
-          { id: 'follow', label: 'FOLLOW', sub: '04', icon: ListOrdered }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeMode === tab.id;
+      {/* 4 Mode Switcher Tabs */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        {modes.map((m) => {
+          const Icon = m.icon;
+          const isActive = activeMode === m.id;
           return (
             <button
-              key={tab.id}
-              role="tab"
+              key={m.id}
+              onClick={() => setActiveMode(m.id as StudentMode)}
               aria-selected={isActive}
-              onClick={() => {
-                cancel();
-                setActiveMode(tab.id as StudentMode);
-              }}
-              className={`py-2.5 px-2 rounded-xl text-xs font-bold flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all focus-visible:ring-2 ${
+              role="tab"
+              className={`p-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border ${
                 isActive
-                  ? 'bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 shadow-xs border border-zinc-900 dark:border-white'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                  ? 'bg-[#0A625D] text-white border-[#084E4A] shadow-sm'
+                  : 'bg-white dark:bg-[#142738] text-[#19324A] dark:text-[#F0F6F5] border-[#D8E2DC] dark:border-[#25435E] hover:bg-[#E8F5F2] dark:hover:bg-[#19324A]'
               }`}
             >
-              <span className={`text-[10px] opacity-70 ${isActive ? 'text-red-400 dark:text-red-600' : ''}`}>({tab.sub})</span>
-              <span>{tab.label}</span>
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{m.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Main Tab Content Display */}
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xs p-6">
+      {/* Notification Toast */}
+      {questionSentNotification && (
+        <div
+          role="status"
+          className="p-3.5 rounded-xl bg-[#E8F5F2] border border-[#BFE5DC] text-[#0A625D] text-sm font-semibold flex items-center gap-2"
+        >
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{questionSentNotification}</span>
+        </div>
+      )}
+
+      {/* Active Mode Display Container */}
+      <div className="civic-card p-6 md:p-8 bg-white dark:bg-[#142738] shadow-sm">
         
-        {/* ================= MODE 1: READ ================= */}
+        {/* ================= MODE 1: READ (CAPTIONS) ================= */}
         {activeMode === 'read' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800 font-mono">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
               <div className="flex items-center gap-2">
-                <span className="glyph-dot glyph-dot-pulse" />
-                <h2 className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-white">
-                  LIVE STREAMING CAPTIONS ({captions.length})
+                <Radio className="w-4 h-4 text-[#0A625D] animate-pulse" />
+                <h2 className="text-base font-bold text-[#19324A] dark:text-white">
+                  Live Classroom Captions ({captions.length})
                 </h2>
               </div>
               <button
                 onClick={() => setAutoScrollCaptions(!autoScrollCaptions)}
-                className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                className={`text-xs px-2.5 py-1 rounded-lg border font-semibold ${
                   autoScrollCaptions
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border-zinc-900'
-                    : 'bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-zinc-800'
+                    ? 'bg-[#E8F5F2] text-[#0A625D] border-[#BFE5DC]'
+                    : 'bg-[#F7F9F8] text-[#526575] border-[#D8E2DC]'
                 }`}
               >
-                AUTO-SCROLL: {autoScrollCaptions ? 'ON' : 'OFF'}
+                Auto-scroll: {autoScrollCaptions ? 'ON' : 'OFF'}
               </button>
             </div>
 
             {captions.length === 0 ? (
-              <div className="py-16 text-center text-zinc-400 space-y-2 font-mono text-xs">
-                <Radio className="w-6 h-6 mx-auto text-zinc-300 animate-pulse" />
-                <p>WAITING FOR TEACHER SPEECH...</p>
-                <p className="text-[10px] opacity-70">Captions will render here with live corrections.</p>
+              <div className="py-16 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-[#E8F5F2] text-[#0A625D] flex items-center justify-center mx-auto">
+                  <Radio className="w-6 h-6 animate-pulse" />
+                </div>
+                <h3 className="font-bold text-[#19324A] dark:text-white text-base">
+                  Listening for Teacher Speech
+                </h3>
+                <p className="text-xs text-[#526575] dark:text-[#9BB0C1] max-w-sm mx-auto">
+                  Live speech transcriptions will stream here in real time. Teacher corrections are applied automatically.
+                </p>
               </div>
             ) : (
               <div
                 ref={captionsContainerRef}
-                className="space-y-3 max-h-[500px] overflow-y-auto pr-1 text-zinc-900 dark:text-zinc-100 leading-relaxed"
+                className="space-y-3 max-h-[500px] overflow-y-auto pr-2"
                 aria-live="polite"
               >
                 {captions.map((cap) => (
                   <div
                     key={cap.id}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-xl border transition-all ${
                       cap.is_corrected
-                        ? 'bg-zinc-900 text-white dark:bg-zinc-900 border-red-500'
-                        : 'bg-zinc-50 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800'
+                        ? 'bg-[#FEF7EE] dark:bg-[#19324A] border-[#F6D8A8]'
+                        : 'bg-[#F7F9F8] dark:bg-[#0E1B26] border-[#D8E2DC] dark:border-[#25435E]'
                     }`}
                   >
-                    <div className="nothing-label text-[9px] text-zinc-400 mb-1">
-                      ( SEGMENT {cap.segment_index} )
+                    <div className="flex items-center justify-between text-xs text-[#526575] mb-1">
+                      <span>Segment {cap.segment_index}</span>
+                      {cap.is_corrected && (
+                        <span className="badge-saffron text-[10px]">
+                          ✓ Teacher Verified
+                        </span>
+                      )}
                     </div>
-                    <p className="text-base sm:text-lg leading-relaxed select-text font-normal">
+                    <p className="text-base sm:text-lg leading-relaxed text-[#19324A] dark:text-white select-text">
                       {cap.text}
                     </p>
-                    {cap.is_corrected && (
-                      <span className="nothing-label inline-block mt-1 text-[9px] text-red-400 font-bold">
-                        ✓ TEACHER CORRECTED
-                      </span>
-                    )}
                   </div>
                 ))}
               </div>
@@ -257,291 +292,233 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
           </div>
         )}
 
-        {/* ================= MODE 2: LISTEN ================= */}
-        {activeMode === 'listen' && activeSection && (
+        {/* ================= MODE 2: LISTEN (TTS & DIAGRAM DESCRIPTIONS) ================= */}
+        {activeMode === 'listen' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              <div>
-                <div className="nothing-label text-[10px] text-red-500 font-bold">
-                  [ SECTION 0{studentSectionIndex + 1} // AUDIO MODE ]
-                </div>
-                <h2 className="text-xl font-bold font-heading text-zinc-900 dark:text-white mt-0.5">
-                  {activeSection.title}
+            <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+              <div className="flex items-center gap-2">
+                <Volume2 className="w-5 h-5 text-[#0A625D]" />
+                <h2 className="text-base font-bold text-[#19324A] dark:text-white">
+                  Audio Playback & Visual Descriptions
                 </h2>
               </div>
-
-              {/* Spoken Speed Indicator */}
-              <span className="nothing-label text-[10px] px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold border border-zinc-200 dark:border-zinc-700">
-                RATE // {speechRate}X
+              <span className="badge-mint text-xs">
+                Speed: {speechRate}x
               </span>
             </div>
 
-            {/* Audio Playback Controls Card (Nothing Hardware Style) */}
-            <div className="bg-zinc-950 text-white p-6 rounded-3xl border border-zinc-800 shadow-md space-y-4 font-mono">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="nothing-label text-[10px] text-red-500">
-                    AUDIO CONTROLLER
-                  </div>
-                  <h3 className="font-bold text-base font-heading">
-                    {isSpeaking ? (isPaused ? 'Narration Paused' : 'Playing Section Narration...') : 'Ready to Listen'}
-                  </h3>
-                </div>
+            {activeSection ? (
+              <div className="space-y-6">
+                <div className="p-5 rounded-2xl bg-[#E8F5F2] dark:bg-[#0A625D]/20 border border-[#BFE5DC] dark:border-[#0A625D] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-[#0A625D] dark:text-teal-300">
+                        Section {studentSectionIndex + 1} of {lesson?.sections?.length || 1}
+                      </div>
+                      <h3 className="text-lg font-bold text-[#19324A] dark:text-white mt-0.5">
+                        {activeSection.title}
+                      </h3>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleTTSPlaySection}
-                    className="p-3.5 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-bold shadow-md transition-transform active:scale-95"
-                    aria-label={isSpeaking ? (isPaused ? "Resume Audio" : "Pause Audio") : "Play Lesson Section Audio"}
-                  >
-                    {isSpeaking && !isPaused ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                  </button>
-
-                  {isSpeaking && (
                     <button
-                      onClick={cancel}
-                      className="p-3 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800"
-                      title="Stop"
+                      onClick={handleTTSPlaySection}
+                      className="btn-civic-primary py-2.5 px-5 rounded-xl shadow-xs"
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      {isSpeaking && !isPaused ? (
+                        <>
+                          <Pause className="w-4 h-4" />
+                          <span>Pause Audio</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 fill-current" />
+                          <span>{isPaused ? 'Resume Audio' : 'Listen to Section'}</span>
+                        </>
+                      )}
                     </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Section Text Display */}
-            <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-base sm:text-lg leading-relaxed font-normal">
-              {activeSection.content_text}
-            </div>
-
-            {/* Educational Diagram & Spoken Description */}
-            {activeSection.image_url && (
-              <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="nothing-label text-[10px] text-zinc-500 flex items-center gap-1.5 font-bold">
-                    <ImageIcon className="w-3.5 h-3.5 text-red-500" />
-                    <span>DIAGRAM VISUAL</span>
                   </div>
-                  {activeSection.image_pedagogical_description && (
-                    <button
-                      onClick={handleTTSPlayDiagramDescription}
-                      className="px-3 py-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-950 font-mono text-[10px] font-bold flex items-center gap-1.5 shadow-xs"
-                    >
-                      <Volume2 className="w-3 h-3 text-red-500" />
-                      <span>LISTEN TO DIAGRAM</span>
-                    </button>
-                  )}
+
+                  <p className="text-sm leading-relaxed text-[#142332] dark:text-[#E8F5F2]">
+                    {showSimplified
+                      ? activeSection.simplified_text || activeSection.content_text
+                      : activeSection.content_text}
+                  </p>
                 </div>
 
-                <img
-                  src={activeSection.image_url}
-                  alt={activeSection.image_alt || activeSection.title}
-                  className="w-full max-h-64 object-cover rounded-2xl border border-zinc-200 dark:border-zinc-800"
-                />
+                {/* Pedagogical Image Audio Description */}
+                {activeSection.image_url && (
+                  <div className="p-5 rounded-2xl bg-white dark:bg-[#0E1B26] border border-[#D8E2DC] dark:border-[#25435E] space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-[#B07822]" />
+                        <h4 className="font-bold text-[#19324A] dark:text-white text-sm">
+                          Tactile & Pedagogical Image Description
+                        </h4>
+                      </div>
+                      {activeSection.image_pedagogical_description && (
+                        <button
+                          onClick={handleTTSPlayDiagramDescription}
+                          className="btn-civic-secondary text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+                        >
+                          <Volume2 className="w-3.5 h-3.5 text-[#0A625D]" />
+                          <span>Read Description</span>
+                        </button>
+                      )}
+                    </div>
 
-                {activeSection.image_pedagogical_description && (
-                  <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl text-xs text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 leading-relaxed font-normal">
-                    <span className="font-bold text-zinc-900 dark:text-white">Audio Description:</span> {activeSection.image_pedagogical_description}
+                    <img
+                      src={activeSection.image_url}
+                      alt={activeSection.image_alt || 'Diagram illustrating classroom lesson'}
+                      className="w-full max-h-72 object-contain rounded-xl bg-slate-50 border border-slate-200"
+                    />
+
+                    {activeSection.image_pedagogical_description && (
+                      <p className="text-xs text-[#526575] dark:text-[#9BB0C1] leading-relaxed bg-[#F7F9F8] dark:bg-[#142738] p-3 rounded-xl border border-[#D8E2DC] dark:border-[#25435E]">
+                        <strong>Spoken description:</strong> {activeSection.image_pedagogical_description}
+                      </p>
+                    )}
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-[#526575]">
+                No lesson sections currently loaded.
               </div>
             )}
           </div>
         )}
 
-        {/* ================= MODE 3: RESPOND (AAC) ================= */}
+        {/* ================= MODE 3: RESPOND (AAC PHRASE BOARD) ================= */}
         {activeMode === 'respond' && (
           <div className="space-y-6">
-            <div className="pb-3 border-b border-zinc-100 dark:border-zinc-800 font-mono">
-              <div className="nothing-label text-[10px] text-red-500 font-bold">[ AAC TOUCH BOARD ]</div>
-              <h2 className="font-bold text-base font-heading text-zinc-900 dark:text-white mt-0.5">
-                {t.student.aacTitle}
-              </h2>
+            <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-[#0A625D]" />
+                <h2 className="text-base font-bold text-[#19324A] dark:text-white">
+                  Assistive Communication (AAC) & Inquiries
+                </h2>
+              </div>
+              <span className="badge-saffron text-xs">
+                Tap to speak & notify teacher
+              </span>
             </div>
 
-            {/* Success notification banner when sent */}
-            {aacSentNotification && (
-              <div
-                role="status"
-                className="p-4 rounded-2xl bg-zinc-900 text-white border border-red-500/80 text-xs font-mono font-bold flex items-center gap-3 animate-in fade-in"
-              >
-                <CheckCircle2 className="w-4 h-4 text-red-500 shrink-0" />
-                <div>
-                  <div>SENT // &ldquo;{aacSentNotification}&rdquo;</div>
-                  <div className="text-[10px] text-zinc-400 font-normal mt-0.5">
-                    Your message was delivered to the teacher's inbox.
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* AAC Card Grid (Nothing Monochrome Cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {/* Quick Tap Phrase Board */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {aacPhrases.map((phrase) => (
                 <button
                   key={phrase.id}
                   onClick={() => handleSendAAC(phrase.text)}
-                  className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 hover:border-red-500 dark:hover:border-red-500 text-left transition-all flex items-center justify-between gap-3 group active:scale-98 focus-visible:ring-2"
+                  className="p-4 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] hover:bg-[#E8F5F2] hover:border-[#0A625D] text-left transition-all group flex flex-col justify-between min-h-[90px]"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{phrase.icon}</span>
-                    <div>
-                      <span className="nothing-label text-[9px] text-zinc-400 block">({phrase.code})</span>
-                      <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-red-500 transition-colors">
-                        {phrase.text}
-                      </span>
-                    </div>
-                  </div>
-                  <Send className="w-3.5 h-3.5 text-zinc-400 group-hover:text-red-500 shrink-0" />
+                  <span className="text-2xl mb-1">{phrase.icon}</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#19324A] dark:text-white group-hover:text-[#0A625D]">
+                    {phrase.text}
+                  </span>
                 </button>
               ))}
             </div>
 
-            {/* Custom Text Box */}
-            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 space-y-2 font-mono">
-              <label htmlFor="custom-aac-input" className="nothing-label block text-xs text-zinc-500 dark:text-zinc-400">
-                OR TYPE CUSTOM QUERY
+            {/* Custom Question or Message Form */}
+            <form onSubmit={handleSendCustomQuestion} className="pt-4 border-t border-[#E6ECE8] dark:border-[#1F364C] space-y-3">
+              <label
+                htmlFor="student-question-input"
+                className="block text-sm font-bold text-[#19324A] dark:text-white"
+              >
+                Send Private Question or Note to Teacher
               </label>
               <div className="flex gap-2">
                 <input
-                  id="custom-aac-input"
+                  id="student-question-input"
                   type="text"
-                  value={customAACMessage}
-                  onChange={(e) => setCustomAACMessage(e.target.value)}
-                  placeholder="Type message to teacher..."
-                  className="flex-1 px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500 font-mono"
+                  value={customQuestion}
+                  onChange={(e) => setCustomQuestion(e.target.value)}
+                  placeholder="Type a question or clarification request..."
+                  className="flex-1 p-3 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26] text-sm text-[#19324A] dark:text-white focus:outline-none focus:border-[#0A625D]"
                 />
                 <button
-                  onClick={() => {
-                    if (customAACMessage.trim()) {
-                      handleSendAAC(customAACMessage.trim());
-                    }
-                  }}
-                  disabled={!customAACMessage.trim()}
-                  className="px-4 py-2 nothing-btn-primary text-xs font-bold disabled:opacity-40"
+                  type="submit"
+                  className="btn-civic-primary py-2.5 px-5 rounded-xl shrink-0"
                 >
-                  SEND
+                  <Send className="w-4 h-4" />
+                  <span>Send</span>
                 </button>
               </div>
-            </div>
-
-            {/* Teacher Feedback Feed */}
-            {questions.length > 0 && (
-              <div className="space-y-2.5 pt-4 border-t border-zinc-100 dark:border-zinc-800 font-mono text-xs">
-                <h3 className="nothing-label text-[10px] text-zinc-400 tracking-wider">
-                  TEACHER STATUS FEED
-                </h3>
-                <div className="space-y-2">
-                  {questions.slice(0, 3).map(q => (
-                    <div
-                      key={q.id}
-                      className={`p-3 rounded-xl border ${
-                        q.status === 'acknowledged'
-                          ? 'bg-zinc-900 text-white border-red-500'
-                          : q.status === 'answered'
-                          ? 'bg-zinc-900 text-white border-zinc-700'
-                          : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300'
-                      }`}
-                    >
-                      <div className="font-bold">&ldquo;{q.content}&rdquo;</div>
-                      {q.status === 'acknowledged' && (
-                        <div className="text-[10px] text-red-400 mt-1 font-bold">
-                          ✓ TEACHER SAW AND ACKNOWLEDGED
-                        </div>
-                      )}
-                      {q.status === 'answered' && q.response_text && (
-                        <div className="text-[10px] text-zinc-300 mt-1">
-                          Teacher answered: {q.response_text}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            </form>
           </div>
         )}
 
-        {/* ================= MODE 4: FOLLOW (Step-by-Step) ================= */}
-        {activeMode === 'follow' && activeSection && (
+        {/* ================= MODE 4: FOLLOW (STEP CARDS) ================= */}
+        {activeMode === 'follow' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800 font-mono">
-              <div>
-                <span className="nothing-label text-[10px] text-red-500 font-bold">
-                  STEP // 0{studentSectionIndex + 1} OF 0{lesson?.sections?.length || 1}
-                </span>
-                <h2 className="text-xl font-bold font-heading text-zinc-900 dark:text-white mt-0.5">
-                  {activeSection.title}
+            <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+              <div className="flex items-center gap-2">
+                <ListOrdered className="w-5 h-5 text-[#0A625D]" />
+                <h2 className="text-base font-bold text-[#19324A] dark:text-white">
+                  Step-by-Step Lesson Progress
                 </h2>
               </div>
-
-              {/* Simplified Language Toggle */}
-              <button
-                onClick={() => setShowSimplified(!showSimplified)}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
-                  showSimplified
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border-zinc-900'
-                    : 'bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-zinc-800'
-                }`}
-              >
-                SIMPLIFIED: {showSimplified ? 'ON' : 'OFF'}
-              </button>
+              <div className="text-xs font-semibold text-[#526575]">
+                Step {studentSectionIndex + 1} of {lesson?.sections?.length || 1}
+              </div>
             </div>
 
-            {/* Main Content Box */}
-            <div className="p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-4">
-              <p className="text-base sm:text-xl leading-relaxed font-normal">
-                {showSimplified ? (activeSection.simplified_text || activeSection.content_text) : activeSection.content_text}
-              </p>
+            <div className="space-y-4">
+              {lesson?.sections?.map((sec, idx) => {
+                const isCurrent = idx === studentSectionIndex;
+                const isCompleted = idx < studentSectionIndex;
+                return (
+                  <div
+                    key={sec.id || idx}
+                    onClick={() => {
+                      setFollowTeacher(false);
+                      setStudentSectionIndex(idx);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                      isCurrent
+                        ? 'bg-[#E8F5F2] dark:bg-[#0A625D]/20 border-[#0A625D] shadow-xs'
+                        : isCompleted
+                        ? 'bg-[#F7F9F8] dark:bg-[#0E1B26] border-[#D8E2DC] opacity-80'
+                        : 'bg-white dark:bg-[#142738] border-[#D8E2DC]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                          isCurrent
+                            ? 'bg-[#0A625D] text-white'
+                            : isCompleted
+                            ? 'bg-[#BFE5DC] text-[#0A625D]'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          {isCompleted ? '✓' : idx + 1}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-sm text-[#19324A] dark:text-white">
+                            {sec.title}
+                          </h4>
+                          {isCurrent && (
+                            <p className="text-xs text-[#526575] dark:text-[#9BB0C1] mt-1 leading-relaxed">
+                              {sec.content_text.slice(0, 160)}...
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-              {/* Key Terms Highlight */}
-              {activeSection.key_terms && (
-                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-1.5 flex-wrap font-mono">
-                  <span className="nothing-label text-[10px] text-zinc-400">KEY TERMS:</span>
-                  {activeSection.key_terms.split(',').map((term, i) => (
-                    <span
-                      key={i}
-                      className="px-2.5 py-0.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-[11px] font-bold text-zinc-900 dark:text-white"
-                    >
-                      {term.trim()}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Navigation Controls */}
-            <div className="flex items-center justify-between pt-2 font-mono">
-              <button
-                onClick={() => {
-                  setFollowTeacher(false);
-                  setStudentSectionIndex(Math.max(0, studentSectionIndex - 1));
-                }}
-                disabled={studentSectionIndex === 0}
-                className="px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 disabled:opacity-30 text-xs font-bold flex items-center gap-1.5"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>PREV STEP</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setFollowTeacher(false);
-                  if (lesson?.sections) {
-                    setStudentSectionIndex(Math.min(lesson.sections.length - 1, studentSectionIndex + 1));
-                  }
-                }}
-                disabled={!lesson?.sections || studentSectionIndex >= lesson.sections.length - 1}
-                className="px-5 py-2 nothing-btn-primary disabled:opacity-30 text-xs font-bold flex items-center gap-1.5 shadow-xs"
-              >
-                <span>NEXT STEP</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+                      {isCurrent && (
+                        <span className="badge-mint text-[11px] shrink-0">
+                          Active Step
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

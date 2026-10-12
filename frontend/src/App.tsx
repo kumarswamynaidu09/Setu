@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { LiveClassroomProvider } from './context/LiveClassroomContext';
 
+import { AppShell } from './components/AppShell';
 import { Navbar } from './components/Navbar';
 import { LandingPage } from './pages/LandingPage';
 import { AboutPage } from './pages/AboutPage';
@@ -51,68 +52,46 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <AppShell currentRoute={currentRoute} navigate={navigate}>
       <Navbar currentRoute={currentRoute} navigate={navigate} />
 
-      <main id="main-content" className="flex-1">
-        {currentRoute === 'home' && <LandingPage navigate={navigate} />}
-        {currentRoute === 'about' && <AboutPage />}
-        {currentRoute === 'accessibility' && <AccessibilityPage />}
-        {currentRoute === 'privacy' && <PrivacyPage />}
-        {currentRoute === 'login' && <LoginPage navigate={navigate} />}
-        {currentRoute === 'student-join' && (
-          <StudentJoinPage navigate={navigate} prefilledCode={prefilledCode} />
-        )}
-        {currentRoute === 'student-session' && (
-          <StudentSessionView navigate={navigate} sessionData={routeData?.sessionData} />
-        )}
-        {currentRoute === 'teacher-dashboard' && (
-          <TeacherDashboard navigate={navigate} />
-        )}
-        {currentRoute === 'classes' && (
-          <ClassManagement navigate={navigate} />
-        )}
-        {currentRoute === 'lessons' && (
-          <TeacherDashboard navigate={navigate} />
-        )}
-        {currentRoute === 'lesson-editor' && (
-          <LessonEditor
-            navigate={navigate}
-            initialLesson={routeData?.lesson}
-            initialClassId={routeData?.classId}
-          />
-        )}
-        {currentRoute === 'teacher-live' && (
-          <TeacherLiveClassroom
-            navigate={navigate}
-            sessionData={routeData?.session}
-          />
-        )}
-        {currentRoute === 'coordinator' && (
-          <CoordinatorPortal />
-        )}
-      </main>
-
-      {/* Accessible Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 px-4 mt-12">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
-          <div>
-            <span className="font-extrabold text-slate-800 dark:text-white">SETU</span> — One Classroom. Many Ways to Learn.
-            <div className="text-[11px] text-slate-400 mt-0.5">
-              SevaFirst Innovation Challenge 2026 • Theme 03: Swasth & Samavesh Bharat
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 flex-wrap justify-center font-semibold">
-            <button onClick={() => navigate('about')} className="hover:underline">About</button>
-            <button onClick={() => navigate('accessibility')} className="hover:underline">WCAG 2.2 Statement</button>
-            <button onClick={() => navigate('privacy')} className="hover:underline">Child Privacy</button>
-            <button onClick={() => navigate('login')} className="hover:underline">Teacher Portal</button>
-            <button onClick={() => navigate('student-join')} className="hover:underline text-teal-600 dark:text-teal-400">Join Classroom</button>
-          </div>
-        </div>
-      </footer>
-    </div>
+      {currentRoute === 'home' && <LandingPage navigate={navigate} />}
+      {currentRoute === 'about' && <AboutPage />}
+      {currentRoute === 'accessibility' && <AccessibilityPage />}
+      {currentRoute === 'privacy' && <PrivacyPage />}
+      {currentRoute === 'login' && <LoginPage navigate={navigate} />}
+      {currentRoute === 'student-join' && (
+        <StudentJoinPage navigate={navigate} prefilledCode={prefilledCode} />
+      )}
+      {currentRoute === 'student-session' && (
+        <StudentSessionView navigate={navigate} sessionData={routeData?.sessionData} />
+      )}
+      {currentRoute === 'teacher-dashboard' && (
+        <TeacherDashboard navigate={navigate} />
+      )}
+      {currentRoute === 'classes' && (
+        <ClassManagement navigate={navigate} />
+      )}
+      {currentRoute === 'lessons' && (
+        <TeacherDashboard navigate={navigate} />
+      )}
+      {currentRoute === 'lesson-editor' && (
+        <LessonEditor
+          navigate={navigate}
+          initialLesson={routeData?.lesson}
+          initialClassId={routeData?.classId}
+        />
+      )}
+      {currentRoute === 'teacher-live' && (
+        <TeacherLiveClassroom
+          navigate={navigate}
+          sessionData={routeData?.session}
+        />
+      )}
+      {currentRoute === 'coordinator' && (
+        <CoordinatorPortal />
+      )}
+    </AppShell>
   );
 };
 

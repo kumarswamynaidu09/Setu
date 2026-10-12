@@ -46,16 +46,25 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimerRef = useRef<any>(null);
+  const sessionIdRef = useRef<string | null>(null);
+  const roleRef = useRef<'teacher' | 'student'>('student');
+  const nicknameRef = useRef<string>('Student');
 
-  // Load existing session details
+  // Load existing session details from backend
   const fetchSessionDetails = useCallback(async (sid: string) => {
     try {
       const res = await fetch(`/api/sessions/active/${sid}`);
       if (res.ok) {
         const data = await res.json();
-        setCaptions(data.captions || []);
-        setAnnouncements(data.announcements || []);
-        setQuestions(data.questions || []);
+        if (Array.isArray(data.captions)) {
+          setCaptions(data.captions);
+        }
+        if (Array.isArray(data.announcements)) {
+          setAnnouncements(data.announcements);
+        }
+        if (Array.isArray(data.questions)) {
+          setQuestions(data.questions);
+        }
         if (data.session) {
           setCurrentSectionIndex(data.session.current_section_index || 0);
           setIsSessionActive(data.session.is_active);
@@ -70,6 +79,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
   const connectWebSocket = useCallback((sid: string, currentRole: 'teacher' | 'student', nickname: string) => {
     if (socketRef.current) {
       socketRef.current.close();
+      socketRef.current = null;
     }
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -151,10 +161,13 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     ws.onclose = () => {
-      if (sessionId) {
+      if (sessionIdRef.current) {
         setConnectionStatus('reconnecting');
+        if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
         reconnectTimerRef.current = setTimeout(() => {
-          connectWebSocket(sid, currentRole, nickname);
+          if (sessionIdRef.current) {
+            connectWebSocket(sessionIdRef.current, roleRef.current, nicknameRef.current);
+          }
         }, 3000);
       } else {
         setConnectionStatus('disconnected');
@@ -162,14 +175,18 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     socketRef.current = ws;
-  }, [sessionId]);
+  }, []);
 
   const joinRoom = useCallback((sid: string, code: string, userRole: 'teacher' | 'student', nickname: string = 'Student') => {
     setSessionId(sid);
+    sessionIdRef.current = sid;
     setRoomCode(code);
     setRole(userRole);
+    roleRef.current = userRole;
     setStudentNickname(nickname);
+    nicknameRef.current = nickname;
     setIsSessionActive(true);
+
     fetchSessionDetails(sid);
     connectWebSocket(sid, userRole, nickname);
   }, [connectWebSocket, fetchSessionDetails]);
@@ -180,6 +197,7 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       socketRef.current.close();
       socketRef.current = null;
     }
+    sessionIdRef.current = null;
     setSessionId(null);
     setRoomCode(null);
     setConnectionStatus('disconnected');
@@ -261,22 +279,38 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const postCaption = async (text: string, language: string = 'en') => {
-    if (!sessionId) return;
+    const activeSid = sessionId || sessionIdRef.current;
+    if (!activeSid || !text.trim()) return;
+
     const token = localStorage.getItem('setu_auth_token');
     const segmentIndex = captions.length + 1;
-    await fetch('/api/speech/captions/manual-stream', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      },
-      body: JSON.stringify({
-        session_id: sessionId,
-        segment_index: segmentIndex,
-        text,
-        language
-      })
-    });
+
+    try {
+      const res = await fetch('/api/speech/captions/manual-stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          session_id: activeSid,
+          segment_index: segmentIndex,
+          text: text.trim(),
+          language
+        })
+      });
+
+      if (res.ok) {
+        const newCap = await res.json();
+        // Optimistically append if not received via socket yet
+        setCaptions(prev => {
+          if (prev.some(c => c.id === newCap.id)) return prev;
+          return [...prev, newCap];
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to post caption:', err);
+    }
   };
 
   const correctCaption = async (segmentId: string, correctedText: string) => {
@@ -305,12 +339,6 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     setIsSessionActive(false);
   };
-
-  useEffect(() => {
-    return () => {
-      leaveRoom();
-    };
-  }, [leaveRoom]);
 
   return (
     <LiveClassroomContext.Provider value={{

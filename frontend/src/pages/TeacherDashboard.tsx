@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useLiveClassroom } from '../context/LiveClassroomContext';
+import { PageHeader } from '../components/PageHeader';
+import { BridgeMotif } from '../components/BridgeMotif';
 import type { ClassRoom, Lesson, LiveSession } from '../types';
 import {
   Radio,
@@ -10,7 +12,9 @@ import {
   Users,
   Play,
   Clock,
-  Circle
+  ArrowRight,
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -70,7 +74,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
 
   const handleStartLiveClass = async () => {
     if (!selectedClassId) {
-      setError('Please select a class to start the session.');
+      setError('Please select a class before starting a live session.');
       return;
     }
     setError(null);
@@ -104,223 +108,206 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-zinc-900 dark:text-zinc-100">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Top Welcome & Quick Action Card in Nothing Industrial Style */}
-      <div className="bg-zinc-950 text-white p-8 rounded-3xl border border-zinc-800 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <div className="nothing-label text-[10px] text-red-500 font-bold mb-1">
-            [ INCLUSIVE CLASSROOM LAYER // TEACHER OS ]
+      <PageHeader
+        title={`Welcome, ${user?.full_name || 'Teacher'}`}
+        subtitle="Manage your inclusive classrooms, prepare multimodal lesson plans, and launch live interactive sessions."
+        badgeText="Teacher OS • Inclusive Classroom Layer"
+        badgeVariant="mint"
+      >
+        <button
+          onClick={() => navigate('classes')}
+          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg"
+        >
+          <Plus className="w-4 h-4 text-[#0A625D]" />
+          <span>New Class</span>
+        </button>
+        <button
+          onClick={() => navigate('lesson-editor', { classId: selectedClassId })}
+          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg"
+        >
+          <BookOpen className="w-4 h-4 text-[#0A625D]" />
+          <span>Add Lesson</span>
+        </button>
+      </PageHeader>
+
+      {/* Start Live Session Workspace Card (Primary Workflow: Choose lesson -> Start class -> Teach) */}
+      <div className="civic-card p-6 md:p-8 bg-[#19324A] text-white shadow-md space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#25435E] pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#0A625D] flex items-center justify-center text-white">
+              <Radio className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">
+                Launch Live Classroom
+              </h2>
+              <p className="text-xs text-slate-300">
+                Core Workflow: Choose lesson → Start class → Teach with captions & audio
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-heading tracking-tight">
-            {t.teacher.welcome}, {user?.full_name || 'Teacher'}
-          </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal">
-            Start a live session to broadcast live captions, diagram audio descriptions, and receive instant AAC student responses.
-          </p>
+
+          <span className="badge-saffron text-xs shrink-0">
+            Room code generated automatically
+          </span>
         </div>
 
-        {/* Start Live Session Widget */}
-        <div className="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 w-full md:w-auto min-w-[320px] space-y-3 font-mono">
-          <div className="nothing-label text-[10px] text-zinc-400">
-            SESSION CONFIG
+        {error && (
+          <div className="p-3.5 rounded-xl bg-[#9B1C1C]/40 border border-[#F8B4B4] text-xs text-red-200">
+            {error}
           </div>
+        )}
 
-          <div>
-            <label htmlFor="class-select" className="text-[10px] uppercase text-zinc-400 block mb-1">
-              Classroom:
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Class Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-200">
+              1. Select Assigned Class
             </label>
             <select
-              id="class-select"
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full p-3 rounded-xl bg-[#142738] border border-[#25435E] text-white text-sm focus:outline-none focus:border-[#0A625D]"
             >
               {classes.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.name} ({c.subject})
+                  {c.grade} • {c.name} ({c.subject})
                 </option>
               ))}
             </select>
           </div>
 
-          <div>
-            <label htmlFor="lesson-select" className="text-[10px] uppercase text-zinc-400 block mb-1">
-              Lesson Material:
+          {/* Lesson Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-200">
+              2. Select Lesson Plan (Multimodal)
             </label>
             <select
-              id="lesson-select"
               value={selectedLessonId}
               onChange={(e) => setSelectedLessonId(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full p-3 rounded-xl bg-[#142738] border border-[#25435E] text-white text-sm focus:outline-none focus:border-[#0A625D]"
             >
               {lessons.map(l => (
                 <option key={l.id} value={l.id}>
-                  {l.title}
+                  {l.title} ({l.sections?.length || 0} Sections)
                 </option>
               ))}
             </select>
           </div>
+        </div>
 
-          {error && (
-            <p className="text-xs text-red-400 font-mono">{error}</p>
-          )}
-
+        <div className="flex justify-end pt-2">
           <button
             onClick={handleStartLiveClass}
-            disabled={starting || classes.length === 0}
-            className="w-full py-3 nothing-btn-accent text-xs tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2"
+            disabled={starting}
+            className="w-full sm:w-auto btn-civic-primary py-3.5 px-8 text-base rounded-xl font-bold shadow-sm disabled:opacity-50"
           >
-            <Radio className="w-3.5 h-3.5 animate-pulse" />
-            <span>{starting ? 'INITIALIZING...' : 'START LIVE SESSION'}</span>
+            {starting ? (
+              <span>Initializing Live Session...</span>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-current" />
+                <span>Start Live Session & Open Teacher Studio</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Main Grid: Classes & Prepared Lessons */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Two Column Layout: Classes on Left, Lessons on Right */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* Classes List */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-base font-bold font-heading flex items-center gap-2">
-              <Users className="w-4 h-4 text-zinc-500" />
-              <span>{t.teacher.activeClasses}</span>
-            </h2>
+        {/* Classes Card */}
+        <div className="civic-card p-6 bg-white dark:bg-[#142738] shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#0A625D]" />
+              <h3 className="font-bold text-base text-[#19324A] dark:text-white">
+                Active Classes ({classes.length})
+              </h3>
+            </div>
             <button
               onClick={() => navigate('classes')}
-              className="nothing-label text-[10px] text-red-500 hover:underline flex items-center gap-1 font-bold"
+              className="text-xs text-[#0A625D] hover:underline font-semibold"
             >
-              <Plus className="w-3 h-3" />
-              <span>+ CLASS</span>
-            </button>
-          </div>
-
-          <div className="space-y-2.5">
-            {classes.map(c => (
-              <div
-                key={c.id}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer font-mono ${
-                  selectedClassId === c.id
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-900 border-red-500 shadow-xs'
-                    : 'bg-white dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300'
-                }`}
-                onClick={() => setSelectedClassId(c.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs">
-                    {c.name}
-                  </span>
-                  <span className="nothing-label text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
-                    {c.grade}
-                  </span>
-                </div>
-                <div className="text-[11px] opacity-70 mt-1">
-                  Subject: {c.subject}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Prepared Accessible Lessons */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-base font-bold font-heading flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-zinc-500" />
-              <span>{t.teacher.lessonLibrary}</span>
-            </h2>
-            <button
-              onClick={() => navigate('lesson-editor', { classId: selectedClassId })}
-              className="px-3 py-1.5 nothing-btn-primary rounded-xl text-xs font-mono font-bold flex items-center gap-1 shadow-xs"
-            >
-              <Plus className="w-3 h-3" />
-              <span>+ LESSON</span>
+              Manage Classes
             </button>
           </div>
 
           <div className="space-y-3">
-            {lessons.map(l => (
+            {classes.map(cls => (
               <div
-                key={l.id}
-                className={`p-5 rounded-2xl border bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${
-                  selectedLessonId === l.id ? 'ring-1 ring-red-500' : ''
-                }`}
+                key={cls.id}
+                className="p-4 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] flex items-center justify-between"
               >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="nothing-label text-[10px] text-zinc-500">
-                      [ {l.grade} // {l.subject} ]
-                    </span>
-                    <span className="nothing-label text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-700">
-                      4 SECTIONS
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-base font-heading text-zinc-900 dark:text-white">
-                    {l.title}
-                  </h3>
-                  <p className="text-xs text-zinc-500 line-clamp-1 font-normal">
-                    {l.summary}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0 font-mono">
-                  <button
-                    onClick={() => navigate('lesson-editor', { lesson: l })}
-                    className="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-bold hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  >
-                    EDIT
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedLessonId(l.id);
-                      handleStartLiveClass();
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-red-600 dark:bg-zinc-100 dark:hover:bg-red-600 text-white dark:text-zinc-950 dark:hover:text-white text-xs font-bold flex items-center gap-1 shadow-xs transition-colors"
-                  >
-                    <Play className="w-3 h-3 fill-current" />
-                    <span>LAUNCH</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* Recent Sessions Audit Log */}
-      {history.length > 0 && (
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 space-y-3">
-          <h2 className="text-sm font-bold font-heading flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-zinc-400" />
-            <span>( RECENT SESSIONS )</span>
-          </h2>
-          <div className="divide-y divide-zinc-100 dark:divide-zinc-800 font-mono text-xs">
-            {history.slice(0, 5).map(s => (
-              <div key={s.id} className="py-2.5 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                    ROOM // {s.room_code}
-                  </span>
-                  <span className="text-zinc-400 ml-3 text-[11px]">
-                    {new Date(s.started_at).toLocaleDateString()} {new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <div className="font-bold text-sm text-[#19324A] dark:text-white">
+                    {cls.name}
+                  </div>
+                  <div className="text-xs text-[#526575] dark:text-[#9BB0C1] mt-0.5">
+                    {cls.grade} Section {cls.section} • {cls.subject}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`nothing-label px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    s.is_active
-                      ? 'bg-red-500 text-white'
-                      : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
-                  }`}>
-                    {s.is_active ? 'LIVE' : 'COMPLETED'}
-                  </span>
-                </div>
+
+                <button
+                  onClick={() => {
+                    setSelectedClassId(cls.id);
+                    navigate('lesson-editor', { classId: cls.id });
+                  }}
+                  className="btn-civic-secondary text-xs py-1 px-2.5 rounded-lg"
+                >
+                  Add Lesson
+                </button>
               </div>
             ))}
           </div>
         </div>
-      )}
+
+        {/* Lessons Library Card */}
+        <div className="civic-card p-6 bg-white dark:bg-[#142738] shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-[#0A625D]" />
+              <h3 className="font-bold text-base text-[#19324A] dark:text-white">
+                Multimodal Lesson Repository ({lessons.length})
+              </h3>
+            </div>
+            <button
+              onClick={() => navigate('lesson-editor')}
+              className="text-xs text-[#0A625D] hover:underline font-semibold"
+            >
+              New Lesson
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {lessons.map(lsn => (
+              <div
+                key={lsn.id}
+                className="p-4 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] flex items-center justify-between"
+              >
+                <div>
+                  <div className="font-bold text-sm text-[#19324A] dark:text-white">
+                    {lsn.title}
+                  </div>
+                  <div className="text-xs text-[#526575] dark:text-[#9BB0C1] mt-0.5">
+                    {lsn.subject} • {lsn.grade} • {lsn.sections?.length || 0} Sections
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => navigate('lesson-editor', { lesson: lsn })}
+                  className="text-xs text-[#0A625D] font-bold hover:underline"
+                >
+                  Edit Lesson
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

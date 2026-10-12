@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, BookOpen, Building2 } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
+import { BridgeMotif } from '../components/BridgeMotif';
+import { LogIn, BookOpen, Building2, ShieldCheck, ArrowRight } from 'lucide-react';
 import type { Role } from '../types';
 
 interface LoginPageProps {
@@ -60,111 +62,63 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
     }
   };
 
-  const handleQuickLogin = async (targetRole: 'teacher' | 'coordinator') => {
-    setError(null);
+  const handleDemoSignIn = async (demoRole: 'teacher' | 'coordinator') => {
     setLoading(true);
     try {
-      await quickDemoLogin(targetRole);
-      if (targetRole === 'coordinator') {
+      await quickDemoLogin(demoRole);
+      if (demoRole === 'coordinator') {
         navigate('coordinator');
       } else {
         navigate('teacher-dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Quick login failed');
+    } catch (e) {
+      setError('Could not connect to demo account.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto py-12 px-4 font-body">
+    <div className="max-w-xl mx-auto px-4 py-8 space-y-6">
       
-      {/* 1-Click Evaluator Demo Sign-In (Nothing Style) */}
-      <div className="bg-zinc-950 text-white p-6 rounded-3xl border border-zinc-800 shadow-md mb-6 font-mono">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="glyph-dot glyph-dot-pulse" />
-          <div className="nothing-label text-[10px] text-zinc-400">
-            QUICK ACCESS // 1-CLICK DEMO ACCOUNTS
-          </div>
-        </div>
-        <p className="text-xs text-zinc-400 mb-4 font-normal">
-          Instant sign-in for SevaFirst 2026 evaluators:
-        </p>
+      <PageHeader
+        title={isRegister ? 'Staff Registration' : 'Teacher & Staff Sign In'}
+        subtitle="Access your teacher studio or school coordinator portal to manage classrooms and lessons."
+        badgeText="Institutional Portal"
+        badgeVariant="navy"
+      />
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <button
-            onClick={() => handleQuickLogin('teacher')}
-            disabled={loading}
-            className="p-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 rounded-2xl text-left transition-all hover:border-red-500 focus-visible:ring-2"
-          >
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 mb-1">
-              <BookOpen className="w-3 h-3" />
-              <span>TEACHER</span>
-            </div>
-            <div className="text-xs font-bold text-white truncate">Anita Sharma</div>
-            <div className="text-[10px] text-zinc-400">Class 6 Science</div>
-          </button>
-
-          <button
-            onClick={() => handleQuickLogin('coordinator')}
-            disabled={loading}
-            className="p-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 rounded-2xl text-left transition-all hover:border-red-500 focus-visible:ring-2"
-          >
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-400 mb-1">
-              <Building2 className="w-3 h-3" />
-              <span>COORDINATOR</span>
-            </div>
-            <div className="text-xs font-bold text-white truncate">Dr. Sunita Rao</div>
-            <div className="text-[10px] text-zinc-400">School In-Charge</div>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Login/Register Form */}
-      <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm text-zinc-900 dark:text-zinc-100 font-mono">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-          <h1 className="text-lg font-bold font-heading">
-            {isRegister ? 'Register Educator' : 'Teacher Sign In'}
-          </h1>
-          <button
-            type="button"
-            onClick={() => setIsRegister(!isRegister)}
-            className="nothing-label text-[10px] text-red-500 hover:underline"
-          >
-            {isRegister ? 'SIGN IN' : 'NEW ACCOUNT'}
-          </button>
-        </div>
-
+      <div className="civic-card p-8 bg-white dark:bg-[#142738] shadow-sm space-y-6">
+        
         {error && (
           <div
             role="alert"
-            className="p-3 mb-4 rounded-xl bg-red-950/20 border border-red-500/80 text-red-600 dark:text-red-400 text-xs font-bold"
+            className="p-3.5 rounded-xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-sm font-semibold"
           >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {isRegister && (
             <div>
-              <label className="nothing-label block text-zinc-500 dark:text-zinc-400 mb-1">
-                FULL NAME
+              <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+                Full Name
               </label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="e.g. Anita Sharma"
-                className="w-full px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
+                placeholder="e.g. Smt. Anita Sharma"
+                className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
               />
             </div>
           )}
 
           <div>
-            <label className="nothing-label block text-zinc-500 dark:text-zinc-400 mb-1">
-              OFFICIAL EMAIL
+            <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+              Institutional Email
             </label>
             <input
               type="email"
@@ -172,49 +126,55 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="teacher.anita@setu.edu.in"
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
+              className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
             />
           </div>
 
           <div>
-            <label className="nothing-label block text-zinc-500 dark:text-zinc-400 mb-1">
-              PASSWORD
+            <label className="block text-xs font-bold text-[#19324A] dark:text-white mb-1">
+              Password
             </label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
+              placeholder="••••••••••••"
+              className="w-full p-3 text-sm rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-white dark:bg-[#0E1B26]"
             />
           </div>
-
-          {isRegister && (
-            <div>
-              <label className="nothing-label block text-zinc-500 dark:text-zinc-400 mb-1">
-                ROLE
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as Role)}
-                className="w-full px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none font-mono"
-              >
-                <option value="teacher">Class Teacher</option>
-                <option value="coordinator">School Accessibility Coordinator</option>
-              </select>
-            </div>
-          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-3 nothing-btn-primary text-xs tracking-wider uppercase transition-all shadow-xs flex items-center justify-center gap-2"
+            className="w-full btn-civic-primary py-3 text-sm rounded-xl font-bold mt-2 shadow-xs"
           >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>{loading ? 'PLEASE WAIT...' : isRegister ? 'CREATE ACCOUNT' : 'SIGN IN'}</span>
+            {isRegister ? 'Complete Registration' : 'Sign In to Workspace'}
           </button>
         </form>
+
+        {/* Quick Demo Sign In Buttons for Judges / Evaluators */}
+        <div className="pt-4 border-t border-[#E6ECE8] dark:border-[#1F364C] space-y-3">
+          <div className="text-xs font-bold text-[#526575] dark:text-[#9BB0C1] uppercase tracking-wider text-center">
+            Evaluator One-Click Sign In
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handleDemoSignIn('teacher')}
+              className="btn-civic-secondary text-xs py-2 px-3 rounded-xl justify-center font-bold"
+            >
+              <span>Demo Teacher (Anita)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoSignIn('coordinator')}
+              className="btn-civic-secondary text-xs py-2 px-3 rounded-xl justify-center font-bold"
+            >
+              <span>Demo Coordinator (Sunita)</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
