@@ -66,18 +66,31 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
             detail="An account with this email already exists."
         )
 
+    # Disallow self-assignment of administrative roles
+    if user_in.role in ["admin", "coordinator"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrative and coordinator accounts cannot be self-registered."
+        )
+
+    assigned_role = user_in.role if user_in.role in ["student", "adult_learner", "teacher"] else "student"
+
     school_id = None
     if user_in.school_code:
-        school = db.query(School).filter(School.code == user_in.school_code.upper()).first()
-        if school:
-            school_id = school.id
+        school = db.query(School).filter(School.code == user_in.school_code.strip().upper()).first()
+        if not school:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid school code '{user_in.school_code}'. Please check with your school coordinator."
+            )
+        school_id = school.id
 
     hashed_pw = get_password_hash(user_in.password)
     new_user = User(
         email=user_in.email.lower(),
         hashed_password=hashed_pw,
         full_name=user_in.full_name,
-        role=user_in.role if user_in.role in ["teacher", "coordinator", "student", "adult_learner"] else "teacher",
+        role=assigned_role,
         school_id=school_id
     )
     db.add(new_user)

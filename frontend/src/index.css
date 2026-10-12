@@ -441,30 +441,134 @@
   background-color: #E4E4E7;
 }
 
-/* Badges */
+/* High Contrast Accessible Badges (WCAG AA > 4.5:1) */
 .badge-mint {
-  background-color: #E8F8EE;
-  color: #2ECC71;
+  background-color: #E8F5F2 !important;
+  color: #0A625D !important;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
+  border: 1px solid rgba(10, 98, 93, 0.2);
 }
 
 .badge-navy {
-  background-color: #EBF3FC;
-  color: #4A90D9;
+  background-color: #EBF3FC !important;
+  color: #19324A !important;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
+  border: 1px solid rgba(25, 50, 74, 0.2);
 }
 
 .badge-saffron {
-  background-color: #FFF6E5;
-  color: #F59E0B;
+  background-color: #FFF6E5 !important;
+  color: #8A580D !important;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
+  border: 1px solid rgba(138, 88, 13, 0.2);
+}
+
+/* ======================================================== */
+/* WCAG 2.2 AAA HIGH CONTRAST THEME ENGINE                   */
+/* ======================================================== */
+
+.theme-high-contrast,
+[data-theme="high-contrast"] {
+  --color-bg-system: #09131D !important;
+  --color-bg-card: #132232 !important;
+  --color-bg-input: #192C40 !important;
+  --color-border: #94A3B8 !important;
+  --color-text-primary: #FFFFFF !important;
+  --color-text-secondary: #E2E8F0 !important;
+  --color-text-tertiary: #CBD5E1 !important;
+  background-color: #09131D !important;
+  color: #FFFFFF !important;
+}
+
+.theme-high-contrast body,
+[data-theme="high-contrast"] body {
+  background-color: #09131D !important;
+  color: #FFFFFF !important;
+}
+
+.theme-high-contrast .ios-card,
+.theme-high-contrast .civic-card,
+[data-theme="high-contrast"] .ios-card,
+[data-theme="high-contrast"] .civic-card {
+  background-color: #132232 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #94A3B8 !important;
+  box-shadow: none !important;
+}
+
+.theme-high-contrast p,
+.theme-high-contrast span,
+.theme-high-contrast h1,
+.theme-high-contrast h2,
+.theme-high-contrast h3,
+.theme-high-contrast h4,
+[data-theme="high-contrast"] p,
+[data-theme="high-contrast"] span,
+[data-theme="high-contrast"] h1,
+[data-theme="high-contrast"] h2,
+[data-theme="high-contrast"] h3,
+[data-theme="high-contrast"] h4 {
+  color: inherit;
+}
+
+.theme-high-contrast input,
+.theme-high-contrast select,
+.theme-high-contrast textarea,
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  background-color: #192C40 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #CBD5E1 !important;
+}
+
+.theme-high-contrast input::placeholder,
+[data-theme="high-contrast"] input::placeholder {
+  color: #94A3B8 !important;
+}
+
+.theme-high-contrast button,
+[data-theme="high-contrast"] button {
+  border-color: #94A3B8;
+}
+
+/* ======================================================== */
+/* DARK THEME ENGINE                                         */
+/* ======================================================== */
+
+.theme-dark,
+[data-theme="dark"] {
+  --color-bg-system: #0F172A !important;
+  --color-bg-card: #1E293B !important;
+  --color-bg-input: #334155 !important;
+  --color-border: #475569 !important;
+  --color-text-primary: #F8FAFC !important;
+  --color-text-secondary: #CBD5E1 !important;
+  --color-text-tertiary: #94A3B8 !important;
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
+.theme-dark body,
+[data-theme="dark"] body {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
+.theme-dark .ios-card,
+.theme-dark .civic-card,
+[data-theme="dark"] .ios-card,
+[data-theme="dark"] .civic-card {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border: 1px solid #334155 !important;
 }

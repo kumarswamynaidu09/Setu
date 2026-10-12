@@ -201,23 +201,15 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ navigate }) => {
         };
         login(authData.access_token, user);
         navigate('dashboard');
-        return;
+      } else {
+        const errData = await authRes.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Registration request could not be completed.');
       }
-    } catch {
-      // Continue to local login if offline or demo environment
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please verify your connection and details.');
+    } finally {
+      setLoading(false);
     }
-
-    // Client-side fallback so onboarding is guaranteed to complete smoothly
-    const mockUser: User = {
-      id: 'usr_' + Math.random().toString(36).substring(2, 9),
-      email: email.trim(),
-      full_name: fullName.trim(),
-      role: selectedRole === 'teacher' ? 'teacher' : 'student',
-      school_id: null,
-      created_at: new Date().toISOString()
-    };
-    login('local_token_' + Date.now(), mockUser);
-    navigate('dashboard');
   };
 
   return (

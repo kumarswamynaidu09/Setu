@@ -21,8 +21,9 @@ interface AccessibilityContextType {
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Always default to clean light standard mode
-  const [theme, setTheme] = useState<AccessibilityTheme>('standard');
+  const [theme, setTheme] = useState<AccessibilityTheme>(() => {
+    return (localStorage.getItem('setu_pref_theme') as AccessibilityTheme) || 'standard';
+  });
 
   const [fontSize, setFontSize] = useState<FontSize>(() => {
     return (localStorage.getItem('setu_pref_font_size') as FontSize) || 'normal';
@@ -46,10 +47,18 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   useEffect(() => {
-    // Keep document element clean light
+    localStorage.setItem('setu_pref_theme', theme);
     document.documentElement.classList.remove('theme-high-contrast', 'theme-dark');
-    document.body.removeAttribute('data-theme');
-  }, []);
+    if (theme === 'high-contrast') {
+      document.documentElement.classList.add('theme-high-contrast');
+      document.body.setAttribute('data-theme', 'high-contrast');
+    } else if (theme === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+      document.body.setAttribute('data-theme', 'dark');
+    } else {
+      document.body.setAttribute('data-theme', 'standard');
+    }
+  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem('setu_pref_font_size', fontSize);

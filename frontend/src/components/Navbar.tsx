@@ -51,6 +51,50 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             </span>
           </button>
 
+          {/* Core 4 Pillar Navigation on Desktop */}
+          <nav className="hidden md:flex items-center gap-1" aria-label="Core Navigation">
+            <button
+              onClick={() => navigate('live-captions')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                currentRoute === 'live-captions'
+                  ? 'bg-[#0A625D]/10 text-[#0A625D]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]'
+              }`}
+            >
+              Live Captions
+            </button>
+            <button
+              onClick={() => navigate('learn')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                currentRoute === 'learn'
+                  ? 'bg-[#19324A]/10 text-[#19324A]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]'
+              }`}
+            >
+              Lessons
+            </button>
+            <button
+              onClick={() => navigate('communicate')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                currentRoute === 'communicate'
+                  ? 'bg-[#B07822]/10 text-[#B07822]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]'
+              }`}
+            >
+              Communicate
+            </button>
+            <button
+              onClick={() => navigate('student-join')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                currentRoute === 'student-join'
+                  ? 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-black/[0.04]'
+              }`}
+            >
+              Join Room
+            </button>
+          </nav>
+
           {/* Right Actions — Context-aware, minimal */}
           <div className="flex items-center gap-2">
             <AccessibilityToolbar />
@@ -123,9 +167,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
         <div className="sm:hidden border-t border-black/[0.04] bg-white/95 backdrop-blur-xl px-4 py-3 space-y-1">
           <button
             onClick={() => { navigate('home'); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2.5 text-sm font-medium text-[#1A1A2E] rounded-xl hover:bg-black/[0.04]"
+            className="w-full text-left px-3 py-2 text-sm font-medium text-[#1A1A2E] rounded-xl hover:bg-black/[0.04]"
           >
             Home
+          </button>
+          <button
+            onClick={() => { navigate('live-captions'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 text-sm font-bold text-[#0A625D] rounded-xl hover:bg-[#E8F5F2]"
+          >
+            🎙️ Live Captions
+          </button>
+          <button
+            onClick={() => { navigate('learn'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 text-sm font-bold text-[#19324A] rounded-xl hover:bg-slate-100"
+          >
+            📚 Accessible Lessons
+          </button>
+          <button
+            onClick={() => { navigate('communicate'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 text-sm font-bold text-[#B07822] rounded-xl hover:bg-amber-50"
+          >
+            💬 Communicate (AAC)
+          </button>
+          <button
+            onClick={() => { navigate('student-join'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 text-sm font-bold text-[#FF6B4A] rounded-xl hover:bg-[#FFF0EC]"
+          >
+            👥 Join Room
           </button>
 
           {!isAuthenticated && (

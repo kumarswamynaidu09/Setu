@@ -19,6 +19,13 @@ def list_lessons(
         query = query.filter(Lesson.class_id == class_id)
     return query.all()
 
+@router.get("/published", response_model=List[LessonResponse])
+def get_published_lessons(
+    db: Session = Depends(get_db)
+):
+    """Returns published lessons for self-paced learner access"""
+    return db.query(Lesson).filter(Lesson.is_published == True).order_by(Lesson.created_at.desc()).all()
+
 @router.get("/{lesson_id}", response_model=LessonResponse)
 def get_lesson(
     lesson_id: str,

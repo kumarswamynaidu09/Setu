@@ -27,8 +27,15 @@ def register_onboarding(req: OnboardingRequest, db: Session = Depends(get_db)):
             detail="An account with this email already exists.",
         )
 
+    # Disallow self-assignment of administrative roles
+    if req.role in ["admin", "coordinator"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrative and coordinator accounts cannot be self-registered."
+        )
+
+    allowed_role = req.role if req.role in ["student", "adult_learner", "teacher"] else "student"
     hashed_pw = get_password_hash(req.password)
-    allowed_role = req.role if req.role in ["student", "adult_learner", "teacher", "coordinator", "admin"] else "student"
 
     new_user = User(
         email=req.email.lower(),

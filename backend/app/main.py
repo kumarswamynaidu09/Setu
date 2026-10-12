@@ -55,10 +55,26 @@ app.include_router(onboarding.router, prefix=settings.API_V1_STR)
 # Also expose websocket router at root level if accessed directly
 app.include_router(speech.router, prefix="")
 
-# Explicit WebSocket route at /ws/live/{session_id}
+# Explicit WebSocket routes
 @app.websocket("/ws/live/{session_id}")
-async def websocket_ws_live(websocket: speech.WebSocket, session_id: str, role: str = "student", nickname: str = "Student"):
-    await speech.websocket_live_channel(websocket, session_id, role=role, nickname=nickname)
+async def websocket_ws_live(
+    websocket: speech.WebSocket,
+    session_id: str,
+    role: str = "student",
+    nickname: str = "Student",
+    token: speech.Optional[str] = None
+):
+    await speech.websocket_live_channel(websocket, session_id, role=role, nickname=nickname, token=token)
+
+@app.websocket("/ws/speech/stream")
+async def websocket_ws_speech_stream(
+    websocket: speech.WebSocket,
+    session_id: speech.Optional[str] = None,
+    language: str = "en-IN",
+    token: speech.Optional[str] = None,
+    provider: speech.Optional[str] = None
+):
+    await speech.websocket_speech_stream(websocket, session_id=session_id, language=language, token=token, provider=provider)
 
 
 @app.get("/api/health")

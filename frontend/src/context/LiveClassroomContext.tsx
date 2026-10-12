@@ -94,7 +94,10 @@ export const LiveClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/ws/live/${sid}?role=${currentRole}&nickname=${encodeURIComponent(nickname)}`;
+    const token = currentRole === 'teacher'
+      ? (localStorage.getItem('setu_access_token') || '')
+      : (localStorage.getItem('setu_student_token') || localStorage.getItem('setu_access_token') || '');
+    const wsUrl = `${protocol}//${host}/ws/live/${sid}?role=${currentRole}&nickname=${encodeURIComponent(nickname)}${token ? `&token=${encodeURIComponent(token)}` : ''}`;
 
     const ws = new WebSocket(wsUrl);
 

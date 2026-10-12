@@ -20,6 +20,9 @@ import { ClassManagement } from './pages/ClassManagement';
 import { LessonEditor } from './pages/LessonEditor';
 import { TeacherLiveClassroom } from './pages/TeacherLiveClassroom';
 import { CoordinatorPortal } from './pages/CoordinatorPortal';
+import { PersonalCaptionsPage } from './pages/PersonalCaptionsPage';
+import { CommunicatePage } from './pages/CommunicatePage';
+import { AccessibleLessonsPage } from './pages/AccessibleLessonsPage';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
@@ -96,6 +99,15 @@ const AppContent: React.FC = () => {
       )}
       {currentRoute === 'coordinator' && (
         <CoordinatorPortal />
+      )}
+      {(currentRoute === 'live-captions' || currentRoute === 'captions') && (
+        <PersonalCaptionsPage navigate={navigate} />
+      )}
+      {currentRoute === 'communicate' && (
+        <CommunicatePage navigate={navigate} />
+      )}
+      {(currentRoute === 'learn' || currentRoute === 'accessible-lessons') && (
+        <AccessibleLessonsPage navigate={navigate} />
       )}
     </AppShell>
   );

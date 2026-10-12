@@ -127,73 +127,73 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
     if (r === 'adult_learner') {
       return [
         {
-          title: 'Browse Courses',
-          subtitle: 'Vocational & life-skill modules',
+          title: 'Live Captions',
+          subtitle: 'Understand meetings, lectures & spoken dialogue',
+          icon: Radio,
+          iconBg: 'bg-[#0A625D]/10',
+          iconColor: 'text-[#0A625D]',
+          route: 'live-captions'
+        },
+        {
+          title: 'Accessible Learning',
+          subtitle: 'Self-paced modules with 4 representations',
           icon: BookOpen,
-          iconBg: 'bg-[#4A90D9]/10',
-          iconColor: 'text-[#4A90D9]',
-          route: 'student-join'
+          iconBg: 'bg-[#19324A]/10',
+          iconColor: 'text-[#19324A]',
+          route: 'learn'
         },
         {
-          title: 'My Progress',
-          subtitle: 'Track completed units & badges',
-          icon: Rocket,
-          iconBg: 'bg-[#2ECC71]/10',
-          iconColor: 'text-[#2ECC71]',
-          route: 'student-join'
+          title: 'Communicate (AAC)',
+          subtitle: 'Speech board to express yourself clearly',
+          icon: MessageSquare,
+          iconBg: 'bg-[#B07822]/10',
+          iconColor: 'text-[#B07822]',
+          route: 'communicate'
         },
         {
-          title: 'Accessibility Settings',
-          subtitle: 'Tune font, contrast & inputs',
-          icon: Settings,
+          title: 'Join Classroom',
+          subtitle: 'Enter 6-character room code to participate',
+          icon: Users,
           iconBg: 'bg-[#FF6B4A]/10',
           iconColor: 'text-[#FF6B4A]',
-          route: 'profile-setup'
-        },
-        {
-          title: 'Community',
-          subtitle: 'Peer exchange & study groups',
-          icon: Users,
-          iconBg: 'bg-[#F59E0B]/10',
-          iconColor: 'text-[#F59E0B]',
-          route: 'about'
+          route: 'student-join'
         }
       ];
     }
 
-    // Default: Student
+    // Default: Student & Adult Learner Core 4 Pillars
     return [
       {
-        title: 'Join Classroom',
-        subtitle: 'Enter 6-digit teacher room code',
+        title: 'Live Captions',
+        subtitle: 'Understand spoken words in real time',
         icon: Radio,
+        iconBg: 'bg-[#0A625D]/10',
+        iconColor: 'text-[#0A625D]',
+        route: 'live-captions'
+      },
+      {
+        title: 'Accessible Lessons',
+        subtitle: 'Read, listen, and follow multi-format lessons',
+        icon: BookOpen,
+        iconBg: 'bg-[#19324A]/10',
+        iconColor: 'text-[#19324A]',
+        route: 'learn'
+      },
+      {
+        title: 'Communicate (AAC)',
+        subtitle: 'Speech board to express yourself freely',
+        icon: MessageSquare,
+        iconBg: 'bg-[#B07822]/10',
+        iconColor: 'text-[#B07822]',
+        route: 'communicate'
+      },
+      {
+        title: 'Join Classroom',
+        subtitle: 'Enter 6-character teacher room code',
+        icon: Users,
         iconBg: 'bg-[#FF6B4A]/10',
         iconColor: 'text-[#FF6B4A]',
         route: 'student-join'
-      },
-      {
-        title: 'My Lessons',
-        subtitle: 'Read or listen to past lessons',
-        icon: BookOpen,
-        iconBg: 'bg-[#4A90D9]/10',
-        iconColor: 'text-[#4A90D9]',
-        route: 'student-join'
-      },
-      {
-        title: 'Accessibility Settings',
-        subtitle: 'Update your support preferences',
-        icon: Settings,
-        iconBg: 'bg-[#8B5CF6]/10',
-        iconColor: 'text-[#8B5CF6]',
-        route: 'profile-setup'
-      },
-      {
-        title: 'Help',
-        subtitle: 'Learn how to use assistive tools',
-        icon: HelpCircle,
-        iconBg: 'bg-[#2ECC71]/10',
-        iconColor: 'text-[#2ECC71]',
-        route: 'about'
       }
     ];
   };

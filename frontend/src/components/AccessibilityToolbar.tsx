@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { AppLanguage, FontSize } from '../types';
-import { Type, Sliders, Volume2, Globe } from 'lucide-react';
+import { AppLanguage, FontSize, AccessibilityTheme } from '../types';
+import { Type, Sliders, Volume2, Globe, Sun } from 'lucide-react';
 
 export const AccessibilityToolbar: React.FC = () => {
   const {
+    theme, setTheme,
     fontSize, setFontSize,
     dyslexiaFont, setDyslexiaFont,
     speechRate, setSpeechRate,
@@ -99,6 +100,33 @@ export const AccessibilityToolbar: React.FC = () => {
                     }`}
                   >
                     {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Contrast / Display Mode */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Sun className="w-3.5 h-3.5 text-[#0D7377]" />
+                <span>Display & Contrast Mode</span>
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: 'standard', label: 'Standard' },
+                  { id: 'high-contrast', label: 'High Contrast' },
+                  { id: 'dark', label: 'Dark Mode' }
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setTheme(m.id as AccessibilityTheme)}
+                    className={`py-1.5 px-2 text-xs rounded-lg font-medium border text-center transition-colors ${
+                      theme === m.id
+                        ? 'bg-[#0D7377] text-white border-[#095356] font-bold'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {m.label}
                   </button>
                 ))}
               </div>
