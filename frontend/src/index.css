@@ -6,64 +6,30 @@
     --font-body: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono-code: 'Space Mono', monospace;
 
-    /* Civic Calm Color Palette */
-    --color-navy: #19324A;        /* Institutional Navy */
-    --color-teal: #0A625D;        /* Inclusive Teal */
-    --color-saffron: #B07822;     /* Warm Saffron */
-    --color-bg: #F7F9F8;          /* Civic Calm Light Background */
-    --color-mint: #E8F5F2;        /* Soft Mint */
-    --color-slate: #526575;       /* Supporting Slate */
-    --color-surface: #FFFFFF;     /* White card/surface */
-    --color-border: #D8E2DC;      /* Calm border */
-    --color-border-subtle: #E6ECE8;
-
-    --bg-main: var(--color-bg);
-    --bg-surface: var(--color-surface);
-    --bg-subtle: var(--color-mint);
-    --border-main: var(--color-border);
-    --border-subtle: var(--color-border-subtle);
-    --text-main: #142332;
-    --text-muted: var(--color-slate);
-    --accent-primary: var(--color-teal);
-    --accent-secondary: var(--color-navy);
-    --accent-saffron: var(--color-saffron);
-  }
-
-  /* Dark Civic Calm Palette */
-  .theme-dark {
-    --bg-main: #0E1B26;
-    --bg-surface: #142738;
-    --bg-subtle: #19324A;
-    --border-main: #25435E;
-    --border-subtle: #1F364C;
-    --text-main: #F0F6F5;
-    --text-muted: #9BB0C1;
-    --accent-primary: #12948C;
-    --accent-secondary: #E8F5F2;
-    --accent-saffron: #DCA248;
-  }
-
-  /* High Contrast AAA Mode */
-  .theme-high-contrast {
-    --bg-main: #FFFFFF;
-    --bg-surface: #FFFFFF;
-    --bg-subtle: #F0F4F2;
-    --border-main: #000000;
-    --border-subtle: #000000;
-    --text-main: #000000;
-    --text-muted: #1A2E3B;
-    --accent-primary: #05403D;
-    --accent-secondary: #0D1C2A;
-    --accent-saffron: #7A5314;
+    /* Clean, Crisp, Bright Light Palette */
+    --color-navy: #1E3A5F;        /* Deep Clean Navy */
+    --color-teal: #0D7377;        /* Energetic Crisp Teal */
+    --color-teal-hover: #095356;
+    --color-saffron: #C67D0A;     /* Warm Amber Accent */
+    --color-bg: #F8FAFC;          /* Crisp Off-White */
+    --color-surface: #FFFFFF;     /* Bright Pure White Cards */
+    --color-mint: #E6F4F1;        /* Fresh Mint Tint */
+    --color-slate: #475569;       /* High-Legibility Slate Text */
+    --color-border: #E2E8F0;      /* Clean Crisp Borders */
+    --color-border-hover: #CBD5E1;
+    --text-primary: #0F172A;      /* High-Contrast Charcoal/Black for maximal legibility */
+    --text-secondary: #334155;    /* Crisp Secondary Text */
+    --text-muted: #64748B;
   }
 
   body {
     font-family: var(--font-body);
-    background-color: var(--bg-main);
-    color: var(--text-main);
+    background-color: var(--color-bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Language-specific typography support */
+  /* Multi-lingual typography */
   body[data-lang="hi"] {
     font-family: 'Noto Sans Devanagari', 'Public Sans', sans-serif;
   }
@@ -74,19 +40,20 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     letter-spacing: -0.015em;
+    color: var(--text-primary);
   }
 
-  /* Dyslexia friendly font style option */
+  /* Dyslexia friendly font layout */
   .font-dyslexia {
     font-family: 'Comic Sans MS', 'Trebuchet MS', 'Verdana', sans-serif !important;
     letter-spacing: 0.08em;
-    word-spacing: 0.15em;
-    line-height: 1.85;
+    word-spacing: 0.16em;
+    line-height: 1.9;
   }
 
-  /* Strong visible focus indicator (WCAG 2.2 AA) */
+  /* Unambiguous 3px Focus Ring (WCAG 2.2 AA) */
   *:focus-visible {
-    outline: 3px solid var(--accent-primary) !important;
+    outline: 3px solid #0D7377 !important;
     outline-offset: 2px !important;
   }
 
@@ -100,17 +67,17 @@
     }
   }
 
-  /* Skip to content link */
+  /* Skip to main content link */
   .skip-link {
     position: absolute;
-    top: -50px;
-    left: 12px;
-    background: #19324A;
+    top: -60px;
+    left: 16px;
+    background: #0F172A;
     color: #FFFFFF;
     padding: 10px 20px;
     border-radius: 0 0 8px 8px;
     z-index: 9999;
-    transition: top 0.2s;
+    transition: top 0.2s ease;
     font-weight: 700;
     font-size: 14px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -120,26 +87,29 @@
   }
 }
 
-/* Civic Calm Cards & Panels */
+/* Crisp Clean Light Card */
 .civic-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-main);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .civic-card:hover {
-  border-color: #BACBCE;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Primary Institutional Button */
+/* Primary Action Button (Vibrant Teal) */
 .btn-civic-primary {
-  background-color: #0A625D;
+  background-color: #0D7377;
   color: #FFFFFF;
-  border: 1px solid #084E4A;
+  border: 1px solid #095356;
   border-radius: 0.625rem;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -148,21 +118,23 @@
 }
 
 .btn-civic-primary:hover {
-  background-color: #084E4A;
+  background-color: #095356;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-civic-primary:active {
   transform: translateY(1px);
 }
 
-/* Secondary Institutional Button */
+/* Secondary Button (Crisp White Card with Dark Text) */
 .btn-civic-secondary {
   background-color: #FFFFFF;
-  color: #19324A;
-  border: 1.5px solid #D8E2DC;
+  color: #0F172A;
+  border: 1.5px solid #E2E8F0;
   border-radius: 0.625rem;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -171,59 +143,58 @@
 }
 
 .btn-civic-secondary:hover {
-  background-color: #F7F9F8;
-  border-color: #19324A;
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #0D7377;
 }
 
-/* Saffron Accent Badge / Tag */
-.badge-saffron {
-  background-color: #FEF7EE;
-  color: #8C5E16;
-  border: 1px solid #F6D8A8;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-/* Institutional Navy Badge */
-.badge-navy {
-  background-color: #EBF2F7;
-  color: #19324A;
-  border: 1px solid #CFDFEC;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-/* Soft Mint Badge */
+/* Badges with crisp high contrast text */
 .badge-mint {
-  background-color: #E8F5F2;
-  color: #0A625D;
-  border: 1px solid #BFE5DC;
+  background-color: #E6F4F1;
+  color: #0D7377;
+  border: 1px solid #BCE3DC;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
 }
 
-/* Civic Calm Live Indicator */
+.badge-navy {
+  background-color: #F1F5F9;
+  color: #1E293B;
+  border: 1px solid #CBD5E1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-saffron {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Pulse Live Status Indicator */
 .live-pulse {
   position: relative;
   width: 10px;
   height: 10px;
   border-radius: 9999px;
-  background-color: #0A625D;
+  background-color: #0D7377;
   display: inline-block;
 }
 
@@ -235,27 +206,18 @@
   right: -3px;
   bottom: -3px;
   border-radius: 9999px;
-  border: 2px solid #0A625D;
+  border: 2px solid #0D7377;
   opacity: 0.6;
   animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
 @keyframes pulse-ring {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  70% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
+  0% { transform: scale(0.9); opacity: 0.8; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Custom Clean Scrollbar */
+/* Clean Slate Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -267,6 +229,6 @@
   background: #CBD5E1;
   border-radius: 4px;
 }
-.theme-dark ::-webkit-scrollbar-thumb {
-  background: #334E68;
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }

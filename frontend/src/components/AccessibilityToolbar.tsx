@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { AppLanguage, FontSize, AccessibilityTheme } from '../types';
-import { Type, Moon, Sun, Eye, Sliders, Volume2, Globe } from 'lucide-react';
+import { AppLanguage, FontSize } from '../types';
+import { Type, Sliders, Volume2, Globe } from 'lucide-react';
 
 export const AccessibilityToolbar: React.FC = () => {
   const {
-    theme, setTheme,
     fontSize, setFontSize,
     dyslexiaFont, setDyslexiaFont,
     speechRate, setSpeechRate,
-    language, setLanguage,
-    t
+    language, setLanguage
   } = useAccessibility();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -20,33 +18,33 @@ export const AccessibilityToolbar: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        aria-label="Accessibility settings"
-        className="btn-civic-secondary text-xs py-1.5 px-3 rounded-lg border border-[#D8E2DC] dark:border-[#25435E] shadow-2xs hover:bg-[#E8F5F2] dark:hover:bg-[#19324A] transition-colors"
+        aria-label="Display & reading preferences"
+        className="btn-civic-secondary text-xs py-1.5 px-3 rounded-lg border border-slate-200 hover:border-slate-300"
       >
-        <Sliders className="w-4 h-4 text-[#0A625D]" />
-        <span className="font-semibold text-[#19324A] dark:text-white">Accessibility</span>
+        <Sliders className="w-3.5 h-3.5 text-[#0D7377]" />
+        <span className="font-semibold text-slate-800">Reading Options</span>
       </button>
 
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/20"
+            className="fixed inset-0 z-40 bg-black/10"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
           <div
-            className="absolute right-0 mt-2 w-80 z-50 bg-white dark:bg-[#142738] border border-[#D8E2DC] dark:border-[#25435E] rounded-2xl shadow-xl p-5 space-y-5 text-sm"
+            className="absolute right-0 mt-2 w-80 z-50 bg-white border border-slate-200 rounded-2xl shadow-xl p-5 space-y-4 text-sm"
             role="dialog"
-            aria-label="Accessibility preferences panel"
+            aria-label="Reading preferences panel"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
-              <h3 className="font-bold text-[#19324A] dark:text-white flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-[#0A625D]" />
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-[#0D7377]" />
                 <span>Reading & Display Preferences</span>
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-xs text-[#526575] hover:text-[#19324A] dark:text-[#9BB0C1] font-bold"
+                className="text-xs text-slate-500 hover:text-slate-800 font-bold"
               >
                 Close
               </button>
@@ -54,8 +52,8 @@ export const AccessibilityToolbar: React.FC = () => {
 
             {/* Language Selection */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#19324A] dark:text-[#F0F6F5] flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-[#0A625D]" />
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-[#0D7377]" />
                 <span>Language / भाषा / భాష</span>
               </label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -69,8 +67,8 @@ export const AccessibilityToolbar: React.FC = () => {
                     onClick={() => setLanguage(lang.id as AppLanguage)}
                     className={`py-1.5 px-2 text-xs rounded-lg font-medium border text-center transition-colors ${
                       language === lang.id
-                        ? 'bg-[#0A625D] text-white border-[#084E4A]'
-                        : 'bg-[#F7F9F8] dark:bg-[#0E1B26] text-[#19324A] dark:text-[#F0F6F5] border-[#D8E2DC] dark:border-[#25435E] hover:bg-[#E8F5F2]'
+                        ? 'bg-[#0D7377] text-white border-[#095356] font-bold'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
                     {lang.label}
@@ -81,8 +79,8 @@ export const AccessibilityToolbar: React.FC = () => {
 
             {/* Text Size */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#19324A] dark:text-[#F0F6F5] flex items-center gap-1.5">
-                <Type className="w-3.5 h-3.5 text-[#0A625D]" />
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Type className="w-3.5 h-3.5 text-[#0D7377]" />
                 <span>Text Size</span>
               </label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -96,8 +94,8 @@ export const AccessibilityToolbar: React.FC = () => {
                     onClick={() => setFontSize(s.id as FontSize)}
                     className={`py-1.5 px-2 text-xs rounded-lg font-medium border text-center transition-colors ${
                       fontSize === s.id
-                        ? 'bg-[#0A625D] text-white border-[#084E4A]'
-                        : 'bg-[#F7F9F8] dark:bg-[#0E1B26] text-[#19324A] dark:text-[#F0F6F5] border-[#D8E2DC] dark:border-[#25435E] hover:bg-[#E8F5F2]'
+                        ? 'bg-[#0D7377] text-white border-[#095356] font-bold'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
                     {s.label}
@@ -106,44 +104,17 @@ export const AccessibilityToolbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Contrast / Color Theme */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#19324A] dark:text-[#F0F6F5] flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-[#0A625D]" />
-                <span>Contrast Theme</span>
-              </label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {[
-                  { id: 'standard', label: 'Standard' },
-                  { id: 'high-contrast', label: 'High (AAA)' },
-                  { id: 'dark', label: 'Dark Navy' }
-                ].map((th) => (
-                  <button
-                    key={th.id}
-                    onClick={() => setTheme(th.id as AccessibilityTheme)}
-                    className={`py-1.5 px-2 text-xs rounded-lg font-medium border text-center transition-colors ${
-                      theme === th.id
-                        ? 'bg-[#19324A] text-white border-[#0E1B26]'
-                        : 'bg-[#F7F9F8] dark:bg-[#0E1B26] text-[#19324A] dark:text-[#F0F6F5] border-[#D8E2DC] dark:border-[#25435E] hover:bg-[#E8F5F2]'
-                    }`}
-                  >
-                    {th.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Dyslexia Friendly Toggle */}
             <div className="flex items-center justify-between pt-1">
-              <span className="text-xs font-bold text-[#19324A] dark:text-[#F0F6F5]">
-                Dyslexia-Friendly Spacing
+              <span className="text-xs font-bold text-slate-800">
+                Dyslexia-Friendly Letter Spacing
               </span>
               <button
                 role="switch"
                 aria-checked={dyslexiaFont}
                 onClick={() => setDyslexiaFont(!dyslexiaFont)}
                 className={`w-11 h-6 rounded-full transition-colors relative ${
-                  dyslexiaFont ? 'bg-[#0A625D]' : 'bg-[#CBD5E1] dark:bg-[#334E68]'
+                  dyslexiaFont ? 'bg-[#0D7377]' : 'bg-slate-300'
                 }`}
               >
                 <span
@@ -156,10 +127,10 @@ export const AccessibilityToolbar: React.FC = () => {
 
             {/* Speech Rate Slider */}
             <div className="space-y-1.5 pt-1">
-              <div className="flex justify-between text-xs font-bold text-[#19324A] dark:text-[#F0F6F5]">
+              <div className="flex justify-between text-xs font-bold text-slate-800">
                 <span className="flex items-center gap-1">
-                  <Volume2 className="w-3.5 h-3.5 text-[#0A625D]" />
-                  Audio Speed
+                  <Volume2 className="w-3.5 h-3.5 text-[#0D7377]" />
+                  Audio Narration Speed
                 </span>
                 <span>{speechRate}x</span>
               </div>
@@ -170,7 +141,7 @@ export const AccessibilityToolbar: React.FC = () => {
                 step="0.25"
                 value={speechRate}
                 onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                className="w-full accent-[#0A625D]"
+                className="w-full accent-[#0D7377]"
                 aria-label="Text to speech playback speed"
               />
             </div>

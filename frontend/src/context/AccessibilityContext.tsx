@@ -21,9 +21,8 @@ interface AccessibilityContextType {
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<AccessibilityTheme>(() => {
-    return (localStorage.getItem('setu_pref_theme') as AccessibilityTheme) || 'standard';
-  });
+  // Always default to clean light standard mode
+  const [theme, setTheme] = useState<AccessibilityTheme>('standard');
 
   const [fontSize, setFontSize] = useState<FontSize>(() => {
     return (localStorage.getItem('setu_pref_font_size') as FontSize) || 'normal';
@@ -47,18 +46,13 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   useEffect(() => {
-    localStorage.setItem('setu_pref_theme', theme);
+    // Keep document element clean light
     document.documentElement.classList.remove('theme-high-contrast', 'theme-dark');
-    if (theme === 'high-contrast') {
-      document.documentElement.classList.add('theme-high-contrast');
-    } else if (theme === 'dark') {
-      document.documentElement.classList.add('theme-dark');
-    }
-  }, [theme]);
+    document.body.removeAttribute('data-theme');
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('setu_pref_font_size', fontSize);
-    document.documentElement.classList.remove('text-size-normal', 'text-size-large', 'text-size-xl');
     if (fontSize === 'large') {
       document.documentElement.style.fontSize = '18px';
     } else if (fontSize === 'extra-large') {
@@ -87,6 +81,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     localStorage.setItem('setu_pref_lang', language);
+    document.body.setAttribute('data-lang', language);
   }, [language]);
 
   const currentTranslations = translations[language] || translations.en;
@@ -109,7 +104,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAccessibility = () => {
   const context = useContext(AccessibilityContext);
   if (!context) {
-    throw new Error('useAccessibility must be used within AccessibilityProvider');
+    throw new Error('useAccessibility must be used within an AccessibilityProvider');
   }
   return context;
 };

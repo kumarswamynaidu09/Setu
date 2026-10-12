@@ -113,63 +113,63 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
       <PageHeader
         title={`Welcome, ${user?.full_name || 'Teacher'}`}
         subtitle="Manage your inclusive classrooms, prepare multimodal lesson plans, and launch live interactive sessions."
-        badgeText="Teacher OS • Inclusive Classroom Layer"
+        badgeText="Teacher Workspace"
         badgeVariant="mint"
       >
         <button
           onClick={() => navigate('classes')}
-          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg"
+          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg font-semibold"
         >
-          <Plus className="w-4 h-4 text-[#0A625D]" />
+          <Plus className="w-4 h-4 text-[#0D7377]" />
           <span>New Class</span>
         </button>
         <button
           onClick={() => navigate('lesson-editor', { classId: selectedClassId })}
-          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg"
+          className="btn-civic-secondary text-xs py-2 px-3.5 rounded-lg font-semibold"
         >
-          <BookOpen className="w-4 h-4 text-[#0A625D]" />
+          <BookOpen className="w-4 h-4 text-[#0D7377]" />
           <span>Add Lesson</span>
         </button>
       </PageHeader>
 
-      {/* Start Live Session Workspace Card (Primary Workflow: Choose lesson -> Start class -> Teach) */}
-      <div className="civic-card p-6 md:p-8 bg-[#19324A] text-white shadow-md space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#25435E] pb-4">
+      {/* Start Live Session Workspace Card — Bright Crisp White Card */}
+      <div className="civic-card p-6 md:p-8 bg-white border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0A625D] flex items-center justify-center text-white">
-              <Radio className="w-5 h-5 animate-pulse" />
+            <div className="w-12 h-12 rounded-xl bg-[#E6F4F1] border border-[#BCE3DC] flex items-center justify-center text-[#0D7377]">
+              <Radio className="w-6 h-6 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                 Launch Live Classroom
               </h2>
-              <p className="text-xs text-slate-300">
-                Core Workflow: Choose lesson → Start class → Teach with captions & audio
+              <p className="text-xs text-slate-600">
+                Core Workflow: Select your class and lesson plan, then start live speech captioning
               </p>
             </div>
           </div>
 
-          <span className="badge-saffron text-xs shrink-0">
-            Room code generated automatically
+          <span className="badge-saffron text-xs shrink-0 font-bold">
+            6-Character Room Code Generated Automatically
           </span>
         </div>
 
         {error && (
-          <div className="p-3.5 rounded-xl bg-[#9B1C1C]/40 border border-[#F8B4B4] text-xs text-red-200">
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Class Selector */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-200">
+            <label className="text-xs font-bold text-slate-800">
               1. Select Assigned Class
             </label>
             <select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
-              className="w-full p-3 rounded-xl bg-[#142738] border border-[#25435E] text-white text-sm focus:outline-none focus:border-[#0A625D]"
+              className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-[#0D7377] focus:bg-white transition-colors"
             >
               {classes.map(c => (
                 <option key={c.id} value={c.id}>
@@ -181,17 +181,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
 
           {/* Lesson Selector */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-200">
+            <label className="text-xs font-bold text-slate-800">
               2. Select Lesson Plan (Multimodal)
             </label>
             <select
               value={selectedLessonId}
               onChange={(e) => setSelectedLessonId(e.target.value)}
-              className="w-full p-3 rounded-xl bg-[#142738] border border-[#25435E] text-white text-sm focus:outline-none focus:border-[#0A625D]"
+              className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-[#0D7377] focus:bg-white transition-colors"
             >
               {lessons.map(l => (
                 <option key={l.id} value={l.id}>
-                  {l.title} ({l.sections?.length || 0} Sections)
+                  {l.title} ({l.sections?.length || 0} Sections with descriptions)
                 </option>
               ))}
             </select>
@@ -202,7 +202,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
           <button
             onClick={handleStartLiveClass}
             disabled={starting}
-            className="w-full sm:w-auto btn-civic-primary py-3.5 px-8 text-base rounded-xl font-bold shadow-sm disabled:opacity-50"
+            className="w-full sm:w-auto btn-civic-primary py-3 px-8 text-sm rounded-xl font-bold shadow-sm disabled:opacity-50"
           >
             {starting ? (
               <span>Initializing Live Session...</span>
@@ -220,17 +220,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Classes Card */}
-        <div className="civic-card p-6 bg-white dark:bg-[#142738] shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+        <div className="civic-card p-6 bg-white border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#0A625D]" />
-              <h3 className="font-bold text-base text-[#19324A] dark:text-white">
+              <Users className="w-5 h-5 text-[#0D7377]" />
+              <h3 className="font-bold text-base text-slate-900">
                 Active Classes ({classes.length})
               </h3>
             </div>
             <button
               onClick={() => navigate('classes')}
-              className="text-xs text-[#0A625D] hover:underline font-semibold"
+              className="text-xs text-[#0D7377] hover:underline font-bold"
             >
               Manage Classes
             </button>
@@ -240,13 +240,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
             {classes.map(cls => (
               <div
                 key={cls.id}
-                className="p-4 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] flex items-center justify-between"
+                className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition-colors flex items-center justify-between"
               >
                 <div>
-                  <div className="font-bold text-sm text-[#19324A] dark:text-white">
+                  <div className="font-bold text-sm text-slate-900">
                     {cls.name}
                   </div>
-                  <div className="text-xs text-[#526575] dark:text-[#9BB0C1] mt-0.5">
+                  <div className="text-xs text-slate-600 mt-0.5">
                     {cls.grade} Section {cls.section} • {cls.subject}
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
                     setSelectedClassId(cls.id);
                     navigate('lesson-editor', { classId: cls.id });
                   }}
-                  className="btn-civic-secondary text-xs py-1 px-2.5 rounded-lg"
+                  className="btn-civic-secondary text-xs py-1 px-3 rounded-lg font-semibold"
                 >
                   Add Lesson
                 </button>
@@ -266,17 +266,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
         </div>
 
         {/* Lessons Library Card */}
-        <div className="civic-card p-6 bg-white dark:bg-[#142738] shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#E6ECE8] dark:border-[#1F364C]">
+        <div className="civic-card p-6 bg-white border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-[#0A625D]" />
-              <h3 className="font-bold text-base text-[#19324A] dark:text-white">
-                Multimodal Lesson Repository ({lessons.length})
+              <BookOpen className="w-5 h-5 text-[#0D7377]" />
+              <h3 className="font-bold text-base text-slate-900">
+                Lesson Repository ({lessons.length})
               </h3>
             </div>
             <button
               onClick={() => navigate('lesson-editor')}
-              className="text-xs text-[#0A625D] hover:underline font-semibold"
+              className="text-xs text-[#0D7377] hover:underline font-bold"
             >
               New Lesson
             </button>
@@ -286,20 +286,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ navigate }) 
             {lessons.map(lsn => (
               <div
                 key={lsn.id}
-                className="p-4 rounded-xl border border-[#D8E2DC] dark:border-[#25435E] bg-[#F7F9F8] dark:bg-[#0E1B26] flex items-center justify-between"
+                className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition-colors flex items-center justify-between"
               >
                 <div>
-                  <div className="font-bold text-sm text-[#19324A] dark:text-white">
+                  <div className="font-bold text-sm text-slate-900">
                     {lsn.title}
                   </div>
-                  <div className="text-xs text-[#526575] dark:text-[#9BB0C1] mt-0.5">
+                  <div className="text-xs text-slate-600 mt-0.5">
                     {lsn.subject} • {lsn.grade} • {lsn.sections?.length || 0} Sections
                   </div>
                 </div>
 
                 <button
                   onClick={() => navigate('lesson-editor', { lesson: lsn })}
-                  className="text-xs text-[#0A625D] font-bold hover:underline"
+                  className="text-xs text-[#0D7377] font-bold hover:underline"
                 >
                   Edit Lesson
                 </button>
