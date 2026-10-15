@@ -63,10 +63,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, currentRoute, navi
               Join Classroom
             </button>
             <button
-              onClick={() => navigate('login')}
+              onClick={() => navigate('teacher-dashboard')}
               className="text-slate-700 hover:text-[#0D7377] hover:underline"
             >
-              Teacher Sign In
+              Teacher Studio
             </button>
           </div>
         </div>

@@ -102,6 +102,11 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
     }
   }, [autoScrollCaptions, captions]);
 
+  // Cancel any active speech when student changes section, mode tab, or text simplification
+  useEffect(() => {
+    cancel();
+  }, [studentSectionIndex, activeMode, showSimplified, cancel]);
+
   const activeSection: LessonSection | undefined = lesson?.sections?.[studentSectionIndex];
 
   // AAC Phrase board items
@@ -356,17 +361,35 @@ export const StudentSessionView: React.FC<StudentSessionViewProps> = ({ sessionD
 
                     <button
                       onClick={handleTTSPlaySection}
-                      className="btn-civic-primary py-2.5 px-5 rounded-xl shadow-xs font-bold"
+                      className={`py-2.5 px-5 rounded-xl shadow-xs font-bold flex items-center gap-2 transition-all ${
+                        isSpeaking && !isPaused
+                          ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse'
+                          : isPaused
+                          ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                          : 'btn-civic-primary'
+                      }`}
+                      aria-label={
+                        isSpeaking && !isPaused
+                          ? 'Pause audio playback'
+                          : isPaused
+                          ? 'Resume audio playback'
+                          : 'Listen to section audio'
+                      }
                     >
                       {isSpeaking && !isPaused ? (
                         <>
                           <Pause className="w-4 h-4" />
                           <span>Pause Audio</span>
                         </>
-                      ) : (
+                      ) : isPaused ? (
                         <>
                           <Play className="w-4 h-4 fill-current" />
-                          <span>{isPaused ? 'Resume Audio' : 'Listen to Section'}</span>
+                          <span>Resume Audio</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4" />
+                          <span>Listen to Section</span>
                         </>
                       )}
                     </button>
