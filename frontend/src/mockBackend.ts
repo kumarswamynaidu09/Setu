@@ -812,6 +812,73 @@ export function setupMockBackend() {
       return jsonResponse({ success: true, status: 'answered' });
     }
 
+    // Live Student Reaction Broadcast
+    if (path === '/api/sessions/reaction') {
+      const body = init?.body ? JSON.parse(init.body as string) : {};
+      const reactionPayload = {
+        id: `rx-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        emoji: body.emoji || '💡',
+        label: body.label || 'Understood',
+        sender: body.sender || 'Student',
+        timestamp: Date.now()
+      };
+      broadcastLiveEvent({
+        type: 'REACTION_NEW',
+        reaction: reactionPayload
+      });
+      return jsonResponse({ success: true, reaction: reactionPayload });
+    }
+
+    // Live Teacher Comprehension Check-in Poll
+    if (path === '/api/sessions/checkin-poll') {
+      const body = init?.body ? JSON.parse(init.body as string) : {};
+      const pollPayload = {
+        id: `poll-${Date.now()}`,
+        question: body.question || 'Quick Check-in: Are you following?',
+        options: body.options || ['👍 Yes, clear!', '🤔 Need a quick recap', '✋ Have a question'],
+        votes: { 0: 0, 1: 0, 2: 0 },
+        totalVotes: 0,
+        isOpen: true
+      };
+      setStored('active_poll', pollPayload);
+      broadcastLiveEvent({
+        type: 'CHECKIN_POLL_START',
+        poll: pollPayload
+      });
+      return jsonResponse(pollPayload, 201);
+    }
+
+    if (path === '/api/sessions/checkin-vote') {
+      const body = init?.body ? JSON.parse(init.body as string) : {};
+      const poll = getStored<any>('active_poll', null);
+      if (poll) {
+        const opt = Number(body.option_index);
+        poll.votes = poll.votes || {};
+        poll.votes[opt] = (poll.votes[opt] || 0) + 1;
+        poll.totalVotes = (poll.totalVotes || 0) + 1;
+        setStored('active_poll', poll);
+        broadcastLiveEvent({
+          type: 'CHECKIN_POLL_VOTE',
+          poll_id: body.poll_id,
+          option_index: opt,
+          votes: poll.votes,
+          totalVotes: poll.totalVotes
+        });
+        return jsonResponse({ success: true, votes: poll.votes, totalVotes: poll.totalVotes });
+      }
+      return jsonResponse({ success: true });
+    }
+
+    if (path === '/api/sessions/checkin-close') {
+      const body = init?.body ? JSON.parse(init.body as string) : {};
+      setStored('active_poll', null);
+      broadcastLiveEvent({
+        type: 'CHECKIN_POLL_CLOSE',
+        poll_id: body.poll_id
+      });
+      return jsonResponse({ success: true });
+    }
+
     // --- 7. SPEECH & CAPTIONS ---
     if (path === '/api/speech/captions/manual-stream') {
       const body = init?.body ? JSON.parse(init.body as string) : {};

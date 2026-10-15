@@ -323,6 +323,67 @@ export const AccessibleLessonStudio: React.FC<AccessibleLessonStudioProps> = ({
     }
   };
 
+  const handleLoadSampleNCERT = (type: 'photosynthesis' | 'water' | 'circuits') => {
+    if (type === 'photosynthesis') {
+      const title = 'Class 6 Science — Photosynthesis and Plant Cells';
+      const text = `Photosynthesis is the fundamental biological process by which autotrophic plants synthesize glucose and chemical energy from sunlight, water, and atmospheric carbon dioxide. The primary reaction occurs in the chloroplasts, where chlorophyll pigments absorb photons and drive the electron transport chain, releasing vital oxygen into Earth's atmosphere.`;
+      setLessonTitle(title);
+      setSubject('General Science');
+      setGrade('Class 6');
+      setManualText(text);
+      setShowManualInput(true);
+      setOriginalExtractedText(text);
+      setUploadResult({
+        filename: 'ncert_class6_photosynthesis.pdf',
+        file_type: 'pdf',
+        page_count: 1,
+        extracted_text: text,
+        has_text: true,
+        ocr_available: true,
+        error: null
+      });
+      setStatusMessage('Loaded NCERT Photosynthesis curriculum sample. Press "Generate Multimodal Lesson" below.');
+    } else if (type === 'water') {
+      const title = 'Class 7 Science — The Water Cycle & Precipitation';
+      const text = `The hydrologic water cycle represents the continuous movement of water on, above, and below the surface of the Earth. Solar radiation heats water in oceans and rivers, driving evaporation into atmospheric water vapor. As moisture ascends, adiabatic cooling causes condensation into clouds, eventually precipitating as rain and returning to aquifers.`;
+      setLessonTitle(title);
+      setSubject('Physical Sciences');
+      setGrade('Class 7');
+      setManualText(text);
+      setShowManualInput(true);
+      setOriginalExtractedText(text);
+      setUploadResult({
+        filename: 'ncert_class7_water_cycle.pdf',
+        file_type: 'pdf',
+        page_count: 1,
+        extracted_text: text,
+        has_text: true,
+        ocr_available: true,
+        error: null
+      });
+      setStatusMessage('Loaded NCERT Water Cycle curriculum sample. Press "Generate Multimodal Lesson" below.');
+    } else {
+      const title = 'Class 8 Science — Electricity & Electrical Conductivity';
+      const text = `Electric current is the rate of flow of electric charges through a conducting material. Metals such as copper and aluminum possess free delocalized valence electrons that drift when subjected to an electromotive potential difference. Insulators have tightly bound electrons preventing electrical transmission.`;
+      setLessonTitle(title);
+      setSubject('Physics & Energy');
+      setGrade('Class 8');
+      setManualText(text);
+      setShowManualInput(true);
+      setOriginalExtractedText(text);
+      setUploadResult({
+        filename: 'ncert_class8_electricity.pdf',
+        file_type: 'pdf',
+        page_count: 1,
+        extracted_text: text,
+        has_text: true,
+        ocr_available: true,
+        error: null
+      });
+      setStatusMessage('Loaded NCERT Electricity curriculum sample. Press "Generate Multimodal Lesson" below.');
+    }
+  };
+
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-[#FAFAF8] text-[#1A1A2E] p-4 sm:p-6 lg:p-8 flex flex-col">
       <div className="max-w-5xl w-full mx-auto flex-1 flex flex-col space-y-6">
@@ -476,6 +537,47 @@ export const AccessibleLessonStudio: React.FC<AccessibleLessonStudioProps> = ({
                   placeholder="e.g. Chapter 4: Photosynthesis and Food Production"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"
                 />
+              </div>
+
+              {/* 1-Click NCERT Curriculum Sample Loader */}
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                    <span className="text-[11px] font-bold text-purple-900 uppercase tracking-wider">
+                      Quick Evaluation Templates (NCERT Curriculum)
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
+                    1-Click Auto-Fill
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleLoadSampleNCERT('photosynthesis')}
+                    className="px-3 py-1.5 rounded-xl bg-purple-50/70 hover:bg-purple-100 border border-purple-200 text-xs font-bold text-purple-900 transition shadow-2xs hover:scale-102 flex items-center gap-1.5"
+                  >
+                    <span>🌿</span>
+                    <span>Class 6: Photosynthesis & Plant Cells</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleLoadSampleNCERT('water')}
+                    className="px-3 py-1.5 rounded-xl bg-purple-50/70 hover:bg-purple-100 border border-purple-200 text-xs font-bold text-purple-900 transition shadow-2xs hover:scale-102 flex items-center gap-1.5"
+                  >
+                    <span>💧</span>
+                    <span>Class 7: The Water Cycle</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleLoadSampleNCERT('circuits')}
+                    className="px-3 py-1.5 rounded-xl bg-purple-50/70 hover:bg-purple-100 border border-purple-200 text-xs font-bold text-purple-900 transition shadow-2xs hover:scale-102 flex items-center gap-1.5"
+                  >
+                    <span>⚡</span>
+                    <span>Class 8: Electricity & Circuits</span>
+                  </button>
+                </div>
               </div>
             </div>
 

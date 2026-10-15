@@ -1,5 +1,6 @@
 import React from 'react';
 import { BridgeMotif } from './BridgeMotif';
+import { ReadingGuide } from './ReadingGuide';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({ children, currentRoute, navigate }) => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF8] text-[#1A1A2E]">
+      <ReadingGuide />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
